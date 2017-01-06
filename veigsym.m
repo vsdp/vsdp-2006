@@ -31,3 +31,5 @@ end
 E = A - V * intval(D) * V';
 r = abss(norm(E,inf));
 lambda = midrad(diag(D),r);
+
+end

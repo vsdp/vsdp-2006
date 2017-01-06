@@ -85,24 +85,24 @@ if isa(A,'intval')
   mA = mid(A);
 else
   mA = A; A = intval(mA);
-end;
+end
 a = a(:);
 if isa(a,'intval')
   ma = mid(a);
 else
   ma = a; a = intval(ma);
-end;
+end
 if isa(B,'intval')
   mB = mid(B);
 else
   mB = B; B = intval(mB);
-end;
+end
 b = b(:);
 if isa(b,'intval')
   mb = mid(b);
 else
   mb = b; b = intval(mb);
-end;
+end
 
 
 n = length(x0);
@@ -110,16 +110,16 @@ p = length(b);
 J.ineqlin = [];
 J.lower = [];
 J.upper = [];
-if nargin < 9 | (length(I) ~= p) | (length(N) ~= n-p)
+if nargin < 9 || (length(I) ~= p) || (length(N) ~= n-p)
   I = []; N =[];
-end;
+end
 
 x0 = x0(:);
 xl = xl(:);
 xu = xu(:);
 if any((xu-xl)<0)
-  disp(['VULS: simple bounds are not feasible']);
-  X = repmat(NaN,n,1);
+  disp('VULS: simple bounds are not feasible');
+  X = NaN(n,1);
   J.ineqlin = NaN;
   J.lower = NaN;
   J.upper = NaN;
@@ -133,8 +133,8 @@ xlint = xl;
 xuint = xu;
 xlint(Iwork) = xl(Iwork) + 10*eps*abs(xl(Iwork)) + 5*eps;
 xuint(Iwork) = xu(Iwork) - 10*eps*abs(xl(Iwork)) - 5*eps;
-if any((xuint < xlint) < 0) | (length(Iwork) < p)
-  X = repmat(NaN,n,1);
+if any((xuint < xlint) < 0) || (length(Iwork) < p)
+  X = NaN(n,1);
   J.ineqlin = NaN;
   J.lower = NaN;
   J.upper = NaN;
@@ -151,7 +151,7 @@ if ~isempty(mB)
   % Determine the basis with lu decomposition
   if 1
     if isempty(I)
-      [L,U,P] = lu(mB(:,Iwork)'); %P*mB(:,Iwork)' - L*U, Iwork
+      [~,~,P] = lu(mB(:,Iwork)'); %P*mB(:,Iwork)' - L*U, Iwork
       piv = P * Iwork;            %piv
       I = piv(1:p)';              %I, full(mB(:,I)),  RANK=rank(full(mB(:,I)))
       if p == n
@@ -211,7 +211,7 @@ if ~isempty(mB)
     XI = verifylss(full(BI),full(bI));
   end
   if isnan(XI)
-    X = repmat(NaN,n,1);
+    X = NaN(n,1);
     J.ineqlin = NaN;
     J.lower = NaN;
     J.upper = NaN;
@@ -219,7 +219,7 @@ if ~isempty(mB)
   else
     X(I) = XI;
   end
-end;                                      %maxradX=max(rad(X)), maxabsX=max(abs(mid(X)))
+end                                      %maxradX=max(rad(X)), maxabsX=max(abs(mid(X)))
 %X-x0
 %Test of inequalities
 if ~isempty(a)
@@ -227,3 +227,5 @@ if ~isempty(a)
 end
 J.lower = find(~(xl <= X));
 J.upper = find(~(X <= xu));
+
+end

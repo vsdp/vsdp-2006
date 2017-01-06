@@ -90,16 +90,16 @@ n = length(C);
 
 fL = -inf;
 Y = NaN;
-dl = repmat(NaN,n,1);
+dl = NaN(n,1);
 
 dim = size(A);
-if ((dim(1) ~= m) | (dim(2) ~= n)) | (length(yt) ~= m)
+if ((dim(1) ~= m) || (dim(2) ~= n)) || (length(yt) ~= m)
   disp('SDP has wrong dimension.');
   return;
-end;
+end
 
 % NaN check
-if max(isnan(yt)) | max(isinf(yt))
+if max(isnan(yt)) || max(isinf(yt))
   disp('VSDPINFEAS: SDP-solver in MYSDPS computes NaN components.');
   return;
 end
@@ -115,7 +115,7 @@ elseif length(xu) ~= n
 elseif min(xu) < 0
   disp('VSDPLOW: primal upper bounds must be nonnegative.');
   return;
-end;
+end
 xu = xu(:);
 % Possibly some further checks
 
@@ -143,7 +143,7 @@ for j = 1 : n
       break;
     end
   end
-  if (isintval(C{j})) | (intvalinput == 1)
+  if (isintval(C{j})) || (intvalinput == 1)
     intvalinput = 1;
     break;
   end
@@ -190,7 +190,7 @@ end
 
 
 % Algorithm
-while (~stop) & (iter <= VSDP_ITER_MAX)
+while (~stop) && (iter <= VSDP_ITER_MAX)
   % 1.step: efficient defect computation using monotonic
   %         roundings for real input
   if intvalinput == 1 % Using interval arithmetic for the D{j}
@@ -199,7 +199,7 @@ while (~stop) & (iter <= VSDP_ITER_MAX)
       for i = 1 : m
         D{j} = D{j} - yt(i) * A{i,j};
       end
-    end;
+    end
   else      % Using monotonic roundings for the D{j} if noninterval input
     ytneg = -yt;
     for j = 1 : n
@@ -214,7 +214,7 @@ while (~stop) & (iter <= VSDP_ITER_MAX)
         Dup{j} = Dup{j} + ytneg(i) * A{i,j};
       end
       D{j} = infsup(Dlow{j},Dup{j});
-    end;
+    end
   end
   setround(0);
   % 2.step
@@ -240,13 +240,13 @@ while (~stop) & (iter <= VSDP_ITER_MAX)
       Y = yt;
     else
       Y = NaN;
-      dl = repmat(NaN,n,1);
+      dl = NaN(n,1);
     end
     return;
-  end;
+  end
   % 4.step:  perturbed problem
   for j = 1 : n
-    if (dl(j) < 0) & (xu(j) == inf)
+    if (dl(j) < 0) && (xu(j) == inf)
       k(j) = k(j) +1;
       epsj(j) = -(VSDP_ALPHA^k(j)) * dl(j) + epsj(j);
     end
@@ -255,26 +255,26 @@ while (~stop) & (iter <= VSDP_ITER_MAX)
     else
       Ceps{j} = C{j} - epsj(j) * speye(size(C{j},1));
     end
-  end;
+  end
   % 5.step: Call of the SDP-solver
   if intvalinput == 1
-    [obj,Xt,yt,Zt,info] = mysdps(blk,midA,Ceps,midb,Xt,yt,Zt);
+    [~,Xt,yt,Zt,info] = mysdps(blk,midA,Ceps,midb,Xt,yt,Zt);
   else
-    [obj,Xt,yt,Zt,info] = mysdps(blk,A,Ceps,b,Xt,yt,Zt);
+    [~,Xt,yt,Zt,info] = mysdps(blk,A,Ceps,b,Xt,yt,Zt);
   end
   
   % NaN check
-  if max(isnan(yt)) | max(isinf(yt))
+  if max(isnan(yt)) || max(isinf(yt))
     disp('VSDPINFEAS: SDP-solver in MYSDPS computes NaN components.');
     return;
   end
   
-  if ((info(1) == 2) | (info(1) == 3))
+  if ((info(1) == 2) || (info(1) == 3))
     stop = 1;
   end
   % 6.step
   iter = iter+1;
-  dl = repmat(NaN,n,1);
+  dl = NaN(n,1);
 end
 
-return
+end

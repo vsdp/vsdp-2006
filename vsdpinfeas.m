@@ -1,4 +1,4 @@
-function [isinfeas, X, Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,Zt)
+function [isinfeas, X, Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,~)
 % VSDPINFEAS Verified Semidefinite Programming
 %     Infeasibility-check for the block-diagonal problem
 %
@@ -71,10 +71,10 @@ b = b(:);
 m = length(b);
 n = length(C);
 dim = size(A);
-if ((dim(1) ~= m) | (dim(2) ~= n))
+if ((dim(1) ~= m) || (dim(2) ~= n))
   disp('VSDPINFEAS: SDP has wrong dimension.');
   return;
-end;
+end
 
 % Basic and nonbasic Indizes
 I = [];
@@ -101,7 +101,7 @@ if choose == 'p'
         break;
       end
     end
-    if (isintval(C{j})) | (intvalinput == 1)
+    if (isintval(C{j})) || (intvalinput == 1)
       intvalinput = 1;
       break;
     end
@@ -114,7 +114,7 @@ if choose == 'p'
     if intvalinput == 0
       % Solving phase I problem approximately
       % A stable phase I problem should be incorporated !!!!!!
-      [obj,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
+      [~,Xt,yt,~,~] = mysdps(blk,A,C,b);
     else
       % Transformation to Phase I midpoint-problem
       bmid = mid(b);
@@ -125,11 +125,11 @@ if choose == 'p'
         Cmid{j} = mid(C{j});
       end
       % Solving phase I problem approximately
-      [obj,Xt,yt,Zt,info] = mysdps(blk,Amid,Cmid,bmid);
+      [~,Xt,yt,~,~] = mysdps(blk,Amid,Cmid,bmid);
     end
   end
   
-  if max(isnan(yt)) | max(isinf(yt))
+  if max(isnan(yt)) || max(isinf(yt))
     disp('VSDPINFEAS: SDP-solver in MYSDPS computes NaN components.');
     return;
   end
@@ -142,7 +142,7 @@ if choose == 'p'
       for i = 2 : m
         D{j} = D{j} + intval(yt(i)) * A{i,j};
       end
-    end;
+    end
   else        % then monotonic roundings for point data
     for j = 1 : n
       setround(-1);
@@ -156,7 +156,7 @@ if choose == 'p'
         Dup{j} = Dup{j} + yt(i) * A{i,j};
       end
       D{j} = infsup(Dlow{j},Dup{j});
-    end;
+    end
   end
   setround(0);
   % The maximal eigenvalue of D{j}
@@ -165,7 +165,7 @@ if choose == 'p'
     dup(j) = max(upbounds);
   end
   % Check certificate
-  if ( dup <= 0 ) & ( (intval(b)'*yt) > 0 )
+  if ( dup <= 0 ) && ( (intval(b)'*yt) > 0 )
     isinfeas = 1;
     X = NaN;
     Y = yt;
@@ -184,7 +184,7 @@ if choose == 'd'
         break;
       end
     end
-    if (isintval(C{j})) | (intvalinput == 1)
+    if (isintval(C{j})) || (intvalinput == 1)
       intvalinput = 1;
       break;
     end
@@ -197,7 +197,7 @@ if choose == 'd'
     if intvalinput == 0
       % Solving phase I problem approximately
       % A stable phase I problem should be incorporated !!!!!!!!!
-      [obj,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
+      [~,Xt,~,~,~] = mysdps(blk,A,C,b);
     else
       % Transformation to Phase I midpoint-problem
       bmid = mid(b);
@@ -208,7 +208,7 @@ if choose == 'd'
         end
       end
       % Solving phase I problem approximately
-      [obj,Xt,yt,Zt,info] = mysdps(blk,Amid,Cmid,bmid);
+      [~,Xt,~,~,~] = mysdps(blk,Amid,Cmid,bmid);
     end
   end
   
@@ -242,7 +242,7 @@ if choose == 'd'
     end
     Amat(m+1,:) = vC;
     % Verified Solution of the linear system
-    [vX,J,I,N] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
+    [vX,~,~,~] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
       vX,I,N);
     if isnan(vX)
       disp('VSDINFEAS: system matrix may have no full rank');
@@ -287,7 +287,7 @@ if choose == 'd'
     end
     Amat(m+1,:) = vC;
     % Verified Solution of the linear system
-    [vX,J,I,N] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
+    [vX,~,~,~] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
       vX,I,N);
     if isnan(vX)
       disp('VSDINFEAS: system matrix may have no full rank');
@@ -308,7 +308,7 @@ if choose == 'd'
   end
 end
 
-return;
+end
 
 % Boyd-Vandenberhghe s585
 % These results are quite typical. The infeasible start

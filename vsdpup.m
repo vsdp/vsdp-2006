@@ -95,13 +95,13 @@ n = length(C);
 
 fU = inf;
 X = NaN;
-lb = repmat(NaN,n,1);
+lb = NaN(n,1);
 
 dim = size(A);
-if (dim(1) ~= m) | (dim(2) ~= n)
+if (dim(1) ~= m) || (dim(2) ~= n)
   disp('VSDPUP: SDP has wrong dimension.');
   return;
-end;
+end
 
 % Initialization
 if nargin <= 7
@@ -114,7 +114,7 @@ elseif length(yu) ~= m
 elseif min(yu) < 0
   disp('VSDUP: dual upper bounds must be nonnegative.');
   return;
-end;
+end
 yu = yu(:);
 
 iter = 0;
@@ -125,13 +125,9 @@ rho = zeros(n,1);
 midA = cell(m,n);
 Ai = cell(1,n);
 midC = cell(1,n);
-Ceps = cell(1,n);
 Eps = cell(1,n);
 II = cell(1,n);
 U = cell(1,n);
-D = cell(1,n);
-Dlow = cell(1,n);
-Dup = cell(1,n);
 l = zeros(n,1);
 blkvec = zeros(n,1);
 
@@ -150,7 +146,7 @@ for j = 1 : n
       break;
     end
   end
-  if (isintval(C{j})) | (intvalinput == 1)
+  if (isintval(C{j})) || (intvalinput == 1)
     intvalinput = 1;
     break;
   end
@@ -180,7 +176,7 @@ if intvalinput == 0      % Case of non-interval input data
     Eps{j} = sparse(zeros(blkvec(j)));
     % Computation of rho can be avoided if
     % Xt is shifted appropriately
-    if ~isempty(yu) & (max(yu) < inf)
+    if ~isempty(yu) && (max(yu) < inf)
       U{j} = abs(C{j});
       for i = 1 : m
         U{j} = U{j} + yu(i) * abs(A{i,j});
@@ -226,7 +222,7 @@ else    % Case of interval input data
     II{j} = speye(blkvec(j));
     Eps{j} = sparse(zeros(blkvec(j)));
     setround(1);
-    if ~isempty(yu) & (max(yu) < inf)   % Computation of rho
+    if ~isempty(yu) && (max(yu) < inf)   % Computation of rho
       U{j} = mag(C{j});
       for i = 1 : m
         U{j} = U{j} + yu(i) * mag(A{i,j});
@@ -242,7 +238,6 @@ if intvalinput == 1
 else
   bperturb = b;
 end
-vEps = zeros(length(vXt),1);
 
 % Algorithm with finite dual bounds yu
 if max(yu) < inf
@@ -256,7 +251,8 @@ if max(yu) < inf
   else
     r = b - Amat * vXt;
     rabs = mag(r);
-  end;
+  end
+  lbwork = zeros(n,1);
   for j = 1 : n
     % Implement other eigenvalue method !!
     Xj = Xt{j};
@@ -266,7 +262,7 @@ if max(yu) < inf
   end
   l = l(:); lbwork = lbwork(:);
   lbminus = min(0,lbwork);
-  if (min(lbminus) == 0) & (max(rabs) == 0)
+  if (min(lbminus) == 0) && (max(rabs) == 0)
     X = Xt;
     lb = lbwork;
   end
@@ -286,9 +282,9 @@ end
 
 %Algorithm with infinite dual bounds yu
 if max(yu) == inf
-  while (~stop) & (iter <= VSDP_ITER_MAX)
+  while (~stop) && (iter <= VSDP_ITER_MAX)
     %1.step
-    [vX,J,I,N] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
+    [vX,~,I,N] = vuls([], [], Amat, b, inf_(Xbounds), sup(Xbounds),...
       mid(vX),I,N);
     if isnan(vX)
       disp('VSDPUP: system matrix may have no full rank');
@@ -315,7 +311,7 @@ if max(yu) == inf
         Eps{j} = -VSDP_ALPHA^k(j) * lb(j) * II{j} + Eps{j};
       end
     end
-    lb = repmat(NaN,n,1);
+    lb = NaN(n,1);
     %Perturbed problem
     vEps = vsvec(Eps,0,1);
     if intvalinput == 0
@@ -325,24 +321,26 @@ if max(yu) == inf
     end
     %5.step
     if intvalinput == 0
-      [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,bperturb,Xt,yt,Zt);
+      [~,Xt,yt,Zt,info] = mysdps(blk,A,C,bperturb,Xt,yt,Zt);
       % NaN check
-      if max(isnan(yt)) | max(isinf(yt))
+      if max(isnan(yt)) || max(isinf(yt))
         disp('VSDPINFEAS: SDP-solver in MYSDPS computes NaN components.');
         return;
       end
     else
-      [objt,Xt,yt,Zt,info] = mysdps(blk,midA,midC,bperturb,Xt,yt,Zt);
-      if max(isnan(yt)) | max(isinf(yt))
+      [~,Xt,yt,Zt,info] = mysdps(blk,midA,midC,bperturb,Xt,yt,Zt);
+      if max(isnan(yt)) || max(isinf(yt))
         disp('VSDPINFEAS: SDP-solver in MYSDPS computes NaN components.');
         return;
       end
     end
-    if ((info(1) == 1) | (info(1) == 3))
+    if ((info(1) == 1) || (info(1) == 3))
       stop = 1;
     end
     %6.step
     vX = sparse(vsvec(Xt,0,1)) + vEps;
     iter = iter+1;
   end
+end
+
 end

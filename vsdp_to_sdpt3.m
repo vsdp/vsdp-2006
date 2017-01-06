@@ -31,18 +31,18 @@ function [At, Ct] = vsdp_to_sdpt3(blk,A,C,b)
 
 % Transformation to cells, and using the transposed
 At = A'; Ct = C;
-if ~iscell(A); At = {A}; end;
-if ~iscell(C);  Ct = {C}; end;
+if ~iscell(A); At = {A}; end
+if ~iscell(C);  Ct = {C}; end
 
 %Problem size
 m = length(b);
 n = size(blk,1);
 %  m,n ,size(At)
 %Main routine
-if all(size(At) == [n m]);
+if all(size(At) == [n, m])
   transyes = zeros(n,1);
   for j = 1:n
-    if strcmp(blk{j,1},'s') & all(size(At{j,1}) == sum(blk{j,2}))
+    if strcmp(blk{j,1},'s') && all(size(At{j,1}) == sum(blk{j,2}))
       %sum(blk{j,2}) because of the special format for
       %defining many small subblocks as one block
       transyes(j) = 1;
@@ -52,4 +52,6 @@ if all(size(At) == [n m]);
     %fprintf(' VSDP: converting At into SDPT3 format...\n');
     At = svec(blk,At);   %C - routine of SDPT3
   end
-end;
+end
+
+end

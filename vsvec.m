@@ -27,7 +27,7 @@ function vA = vsvec(A,sparseflag,mult)
 %Used Files: -
 %Author: Christian Jansson      Last Update: June 04, Feb 05
 
-if nargin < 3,
+if nargin < 3
   mult = sqrt(2);
   if nargin < 2
     sparseflag = 0;
@@ -56,10 +56,12 @@ for j = 1 : l
   vA(vAstart:vAende,1) = Aj(Index<=Jndex);
   %     vA(vAstart:vAende,1) = Aj(find(tril(ones(blocksize))));
   vAstart = vAstart + blocklength;
-end;
+end
 
 if sparseflag ~= 0
   vA = sparse(vA);
 else
   vA = full(vA);
-end;
+end
+
+end

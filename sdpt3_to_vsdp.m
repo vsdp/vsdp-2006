@@ -40,6 +40,5 @@ for j = 1 : n
     %full(A{j,i})
   end
 end
-;
 
-return
+end

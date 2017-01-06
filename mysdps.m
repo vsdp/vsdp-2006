@@ -57,7 +57,7 @@ if VSDP_CHOICE_SDP == 1
   OPTIONS.smallblkdim    = 15;
   A = A';
   
-  if (nargin <= 5) | (VSDP_USE_STARTING_POINT == 0)
+  if (nargin <= 5) || (VSDP_USE_STARTING_POINT == 0)
     [obj,X,y,Z,info] = sqlp(blk,A,C,b,OPTIONS);
   else
     [obj,X,y,Z,info] = sqlp(blk,A,C,b,OPTIONS, X0,y0,Z0);
@@ -67,31 +67,32 @@ if VSDP_CHOICE_SDP == 1
   
 elseif VSDP_CHOICE_SDP == 2
   %Choose is SDPA Solver
-  A = A';
-  [obj,X,y,Z,info] = ...
-    sqlp_buf(blk,A,C,b,[],[],[],[]);
+  [obj,X,y,Z,info] = sqlp_buf(blk,A',C,b);
   
 end
 
+end
 
-function [obj,X,y,Z,infos] = ...
-  sqlp_buf(blk,Avec,C,b,OPTIONS,X0,y0,Z0);
+
+
+function [obj,X,y,Z,infos] = sqlp_buf(blk,Avec,C,b)
 mDIM = size(b,1);
 nBLOCK = max(size(C,1),size(C,2));
 if size(C,1) < size(C,2)
   C=C';
-end;
-for i = 1 : nBLOCK;
+end
+for i = 1 : nBLOCK
   buf = blk(i,2);     %check in get.sdpa.m
   bLOCKsTRUCT(i) = buf{1,1};
-end; clear buf;
+end
+clear buf;
 F(:,1) = C(1:nBLOCK,1);
 F(:,2:mDIM+1) = Avec;
-for i = 1:size(F,1);
-  for j = 1:size(F,2);
+for i = 1:size(F,1)
+  for j = 1:size(F,2)
     F{i,j} = -F{i,j};
-  end;
-end;
+  end
+end
 
 OPTION.maxIteration   = 40;
 OPTION.epsilonStar    = 1.0e-7; %1.0e-07;
@@ -122,4 +123,6 @@ switch INFO.phasevalue
     infos(1) = 2;
   otherwise
     infos(1) = -1;
-end;
+end
+
+end

@@ -1,4 +1,4 @@
-function [blk,A,C,b] = sdpa_to_vsdp(fname);
+function [blk,A,C,b] = sdpa_to_vsdp(fname)
 %SDPA_TO_VSDP: Read in a problem in SDPA sparse format
 %              and convert it to VSDP format.
 %
@@ -19,11 +19,11 @@ function [blk,A,C,b] = sdpa_to_vsdp(fname);
 compressed = 0;
 if exist(fname)
   fid = fopen(fname,'r');
-elseif exist([fname,'.Z']);
+elseif exist([fname,'.Z'])
   compressed = 1;
   unix(['uncompress ',fname,'.Z']);
   fid = fopen(fname,'r');
-elseif exist([fname,'.gz']);
+elseif exist([fname,'.gz'])
   compressed = 2;
   unix(['gunzip ',fname,'.gz']);
   fid = fopen(fname,'r');
@@ -34,7 +34,7 @@ end
 
 %Clean up special characters and comments from the file
 
-[datavec,count] = fscanf(fid,'%c');
+datavec = fscanf(fid,'%c');
 linefeeds = findstr(datavec,char(10));
 comment_chars = '*"=';
 cumidx = [];
@@ -43,7 +43,7 @@ for i=1:length(comment_chars)
   cumidx = [cumidx,idx];
 end
 for j=length(cumidx):-1:1
-  if (cumidx(j)==1) | (strcmp(datavec(cumidx(j)-1),char(10)))
+  if (cumidx(j)==1) || (strcmp(datavec(cumidx(j)-1),char(10)))
     datavec(cumidx(j):linefeeds(min(find(cumidx(j)<linefeeds))))='';
   else
     datavec(cumidx(j):linefeeds(min(find(cumidx(j)<linefeeds)))-1)='';
@@ -61,23 +61,23 @@ clear linefeeds;
 %Close the file
 
 fclose('all');
-if compressed==1; unix(['compress ',fname]); end;
-if compressed==2; unix(['gzip ',fname]); end;
+if compressed==1; unix(['compress ',fname]); end
+if compressed==2; unix(['gzip ',fname]); end
 
 %Next, read in basic problem size parameters.
 
 datavec = sscanf(datavec,'%f');
-if size(datavec,1) < size(datavec,2); datavec = datavec'; end;
+if size(datavec,1) < size(datavec,2); datavec = datavec'; end
 m = datavec(1);                        %the number of dual variables
 numblk  = datavec(2);                  %the number of blocks in a matrix
-blksize = abs(datavec(2+[1:numblk]));       %the block structure vector
+blksize = abs(datavec(2+(1:numblk)));       %the block structure vector
 if size(blksize,1) > size(blksize,2); blksize = blksize'; end
 A=cell(numblk,m);
 C=cell(numblk,1);
 
 %Get input  b.
 idxstrt = 2+numblk;
-b = datavec(idxstrt+[1:m]);
+b = datavec(idxstrt+(1:m));
 idxstrt = idxstrt+m;
 b = -b;
 
@@ -97,7 +97,7 @@ Y = sortrows(Y,[1 2]);
 matidx = [0; find(diff(Y(:,1)) ~= 0); size(Y,1)];
 
 for k = 1:length(matidx)-1
-  idx = [matidx(k)+1 : matidx(k+1)];
+  idx = (matidx(k)+1 : matidx(k+1));
   Ytmp  = Y(idx,1:5);
   matno = Ytmp(1,1);
   Ytmp2 = Ytmp(:,2);
@@ -105,10 +105,9 @@ for k = 1:length(matidx)-1
     n  = blksize(p);
     idx = find(Ytmp2 == p);
     ii = Ytmp(idx,3); jj = Ytmp(idx,4); vv =Ytmp(idx,5);
-    len = length(idx);
     
     idxtmp = find(ii > jj);
-    if ~isempty(idxtmp);
+    if ~isempty(idxtmp)
       tmp = jj(idxtmp);
       jj(idxtmp) = ii(idxtmp); ii(idxtmp) = tmp;
     end
@@ -118,7 +117,7 @@ for k = 1:length(matidx)-1
     if (matno == 0)
       C{p,1} = tmp;
     else
-      %% A{p,1}(:,matno) = tmp;
+      % A{p,1}(:,matno) = tmp;
       A{p,matno} = tmp;
     end
   end
@@ -126,4 +125,4 @@ end
 
 A = A';
 
-return
+end

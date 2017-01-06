@@ -41,13 +41,13 @@ if nargin < 4
 end
 l = length(blk);
 dim = size(vA);
-if dim(2) > dim(1),
+if dim(2) > dim(1)
   vA = vA';
-end;
+end
 
 start = 1;
 ende = 0;
-for j = 1:l,
+for j = 1:l
   blocksize = blk(j);
   blocklength = blocksize*(blocksize+1)/2;
   ende = ende + blocklength;
@@ -57,7 +57,7 @@ for j = 1:l,
   else
     block = zeros(blocksize);
   end
-  Index =  repmat((1:blocksize),blocksize,1);
+  Index = repmat((1:blocksize),blocksize,1);
   Jndex = Index';
   block(Index<=Jndex) = vA(start:ende);
   start = start + blocklength;
@@ -70,5 +70,7 @@ for j = 1:l,
     A{j} = sparse(block);
   else
     A{j} = block;
-  end;
-end;
+  end
+end
+
+end

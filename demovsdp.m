@@ -365,7 +365,7 @@ pause
 [fL, Y, dL] = vsdplow(blk,A,C,b,Xt,yt,Zt);
 
 pause
-fL,
+fL
 
 pause
 size(Y), dL,
@@ -399,7 +399,7 @@ clc
 
 [blk,A,C,b] = sdpa_to_vsdp...
   ([sdplib_vsdp_path sdplibfiles(3).name]);
-Problem = sdplibfiles(3).name,
+Problem = sdplibfiles(3).name
 
 
 r=1e-8;
