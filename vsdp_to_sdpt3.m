@@ -53,5 +53,3 @@ if all(size(At) == [n m]);
     At = svec(blk,At);   %C - routine of SDPT3
   end
 end;
-
-%__________________________END OF VSDP_TO_SDPT3_______________

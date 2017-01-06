@@ -187,10 +187,3 @@ for p=1:size(blk,1)
     error(' blk: some fields are not specified correctly');
   end;
 end;
-%%=============================================================
-
-
-
-
-
-

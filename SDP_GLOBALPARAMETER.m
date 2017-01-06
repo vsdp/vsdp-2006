@@ -26,9 +26,6 @@ global VSDP_ITER_MAX; VSDP_ITER_MAX = 9;
 % Choice of the perturbation parameter; DEFAULT = 1.5;
 global VSDP_ALPHA; VSDP_ALPHA = 1.5;
 
-
-
-
 % Using higher precision for computing the defects in VULS:
 % VSDP_HIGHER_PREC = 0 implies usual interval arithmetic, otherwise
 % we use the INTLAB function DOT_ with quadruple precision

@@ -278,7 +278,3 @@ while (~stop) & (iter <= VSDP_ITER_MAX)
 end
 
 return
-
-%________________________________End of VSDPLOW_______________________
-
-

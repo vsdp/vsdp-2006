@@ -63,6 +63,3 @@ if sparseflag ~= 0
 else
   vA = full(vA);
 end;
-
-%________________________________END OF VSVEC___________________________
-

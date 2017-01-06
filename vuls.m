@@ -227,7 +227,3 @@ if ~isempty(a)
 end
 J.lower = find(~(xl <= X));
 J.upper = find(~(X <= xu));
-
-%__________________________END OF VULS_________________________________
-
-

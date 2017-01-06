@@ -310,8 +310,6 @@ end
 
 return;
 
-
-
 % Boyd-Vandenberhghe s585
 % These results are quite typical. The infeasible start
 % Newton method works
