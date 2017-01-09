@@ -63,7 +63,10 @@ if VSDP_CHOICE_SDP == 1
     [obj,X,y,Z,info] = sqlp(blk,A,C,b,OPTIONS, X0,y0,Z0);
   end
   
-  
+  % for SDPT3-4.0
+  if (isstruct(info) && isfield(info, 'termcode'))
+    info = info.termcode; 
+  end
   
 elseif VSDP_CHOICE_SDP == 2
   %Choose is SDPA Solver
