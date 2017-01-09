@@ -29,7 +29,7 @@ function [obj,X,y,Z,info] = mysdps(blk,A,C,b,X0,y0,Z0)
 %                   SDPA-M: indication of primal or dual infeasibilities,
 %        info = -1 : otherwise
 
-% Christian Jansson      Last Update: December 2005
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 SDP_GLOBALPARAMETER;
 %SDP_GLOBALPARAMETER; calls the desired SDP-solver in MYSDPS

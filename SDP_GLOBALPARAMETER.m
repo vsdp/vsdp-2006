@@ -1,3 +1,5 @@
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
+
 % VSDP gives the possibility to choose via global parameters
 % alternative numerical ways:
 

@@ -120,7 +120,7 @@ format short
 % * |VSDP_CHOICE_SDP = 2|: SDPA is selected
 %
 % We want to illustrate that the proposed rigorous error bounds depend very
-% much on the quality of the computed approximations. 
+% much on the quality of the computed approximations.
 %
 
 [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
@@ -501,4 +501,6 @@ fL, fU
 % _C. Jansson_, *Termination and Verification for Ill-posed Semidefinite
 % Programming Problems*,
 % <http://www.optimization-online.org/DB_HTML/2005/06/1150.html>
-% 
+%
+
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)

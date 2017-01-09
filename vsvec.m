@@ -24,8 +24,8 @@ function vA = vsvec(A,sparseflag,mult)
 %ans =
 %    1.0000    1.4142    1.4142    1.0000    1.4142    1.0000
 %
-%Used Files: -
-%Author: Christian Jansson      Last Update: June 04, Feb 05
+
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 if nargin < 3
   mult = sqrt(2);

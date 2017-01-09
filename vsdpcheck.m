@@ -16,8 +16,7 @@ function [m, n] = vsdpcheck(blk,A,C,b,X0,y0,Z0)
 % C is a n-cell containing the block matrices C{j} for
 % j = 1,...,n.
 
-% written   09/10/06   Christian Jansson
-
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 m = length(b);
 n = length(C);

@@ -66,13 +66,7 @@ function [fL, Y, dl] = vsdplow(blk,A,C,b,Xt,yt,Zt,xu)
 % dl =
 %   9.3912e-011
 
-% written   01/25/05   Christian Jansson
-% modified  09/18/06
-% modified  10/30/06
-% Reference: C. JANSSON, Termination and Verification for
-%            Ill-posed Semidefinite Programming Problems,
-%            to appear
-% http://optimization-online.org/DBHTML/|2005/06/1150.html.
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 % Calling the m-file of the global variables
 SDP_GLOBALPARAMETER;

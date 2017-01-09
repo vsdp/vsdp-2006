@@ -72,12 +72,7 @@ function [fU, X, lb] = vsdpup(blk,A,C,b,Xt,yt,Zt,yu)
 %   5.0000e-005
 %
 
-% written   04/21/05   Christian Jansson
-% modified  04/11/06
-% Reference: C. JANSSON, Termination and Verification for
-%            Ill-posed Semidefinite Programming Problems,
-%            to appear
-% http://optimization-online.org/DBHTML/|2005/06/1150.html.
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 % Calling the m-file of the global variables
 SDP_GLOBALPARAMETER;

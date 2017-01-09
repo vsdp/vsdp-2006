@@ -31,7 +31,8 @@ function A = vsmat(vA,blk,sparseflag,mult)
 %     1     1     1
 %     3     1     1
 %
-%Author: Christian Jansson      Last Update: June 04, Mar 05
+
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 if nargin < 4
   mult = 1/sqrt(2);

@@ -15,11 +15,7 @@ function lambda = veigsym(A)
 % [   -0.6226,   -0.5625]
 % [    9.0495,    9.1096]
 
-% written   11/15/05   Christian Jansson
-% modified  12/28/05
-% Reference: C. JANSSON, Termination and Verification for
-%            Ill-posed Semidefinite Programming Problems,
-%            to appear
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 if ~min(min( mid(A) == mid(A)'))
   error('VEIGSYM: matrix must be symmetric')

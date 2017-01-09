@@ -54,12 +54,7 @@ function [isinfeas, X, Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,~)
 %  -100.5998
 %    -0.0060
 
-% written   07/19/06   Christian Jansson
-% modified  11/12/06
-% Reference: C. JANSSON, Termination and Verification for
-%            Ill-posed Semidefinite Programming Problems,
-%            to appear
-% http://optimization-online.org/DBHTML/|2005/06/1150.html.
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 % Setting default output
 isinfeas = 0;

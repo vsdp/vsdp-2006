@@ -25,9 +25,7 @@ function [At, Ct] = vsdp_to_sdpt3(blk,A,C,b)
 %conversion errors for the input data.
 %It is written such that the input C, A may be also matrices.
 
-
-% written   07/25/05   Christian Jansson
-% modified  09/10/06
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 % Transformation to cells, and using the transposed
 At = A'; Ct = C;

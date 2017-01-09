@@ -58,13 +58,8 @@ function [X, J, I, N] = vuls(A, a, B, b, xl, xu, x0, I, N)
 %      2
 %      3
 %
-%Used Files: verifylss (INTLAB)
-% written   01/12/05   Christian Jansson
-% modified  03/21/06
-% Reference: C. JANSSON, Termination and Verification for
-%            Ill-posed Semidefinite Programming Problems,
-%            to appear
-% http://optimization-online.org/DBHTML/|2005/06/1150.html.
+
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 % Calling the m-file of the global variables
 SDP_GLOBALPARAMETER;

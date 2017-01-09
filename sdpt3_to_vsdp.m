@@ -24,8 +24,8 @@ function [A, C] = sdpt3_to_vsdp(blk,At,Ct,b)
 % This routine requires the SDPT3 file SMAT, which may cause
 % conversion errors for the input data.
 
-% written   07/25/05   Christian Jansson
-% modified  09/10/06
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
+
 C = Ct;
 m = length(b);
 n = length(C);

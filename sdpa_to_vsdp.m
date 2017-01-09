@@ -14,6 +14,7 @@ function [blk,A,C,b] = sdpa_to_vsdp(fname)
 % The blocks C{j} and A{i,j} must be stored as individual
 % matrices in dense or sparse format.
 
+% Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
 %Open the file for input
 compressed = 0;

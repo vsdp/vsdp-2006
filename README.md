@@ -8,3 +8,10 @@ verified certificates of feasibility and infeasibilityare provided.  All
 rounding errors due to floating point arithmetic are taken into account.
 Computational results are given, including results for the SDPLIB benchmark
 problems.  This package supports interval input data and sparse format.
+
+
+## References
+
+- C. Jansson, Termination and Verification for Ill-posed Semidefinite
+  Programming Problems,
+  http://www.optimization-online.org/DB_HTML/2005/06/1150.html
