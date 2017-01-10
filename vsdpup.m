@@ -1,76 +1,59 @@
-function [fU, X, lb] = vsdpup(blk,A,C,b,Xt,yt,Zt,yu)
-% VSDPUP  Verified Semidefinite Programming Upper Bound
-%         for the minimum value of the block-diagonal problem
+function [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt,yu)
+% VSDPUP  Rigorous upper bound for the min. value of the block-diagonal problem:
 %
-%         min  sum(j=1:n| <C{j}, X{j}>)
-%         s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i) for i = 1 : m
-%              X{j} must be positive semidefinite for j = 1 : n
+%         min  sum(j=1:n| <  C{j}, X{j}>)
+%         s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i)  for i = 1:m
+%              X{j} must be positive semidefinite for j = 1:n
 %
-%         Moreover, a rigorous certificate of primal feasibility
-%         is provided.
+%   Moreover, a rigorous certificate of primal feasibility is provided.
 %
-% The block-diagonal structure is described
-% by an n*2-cell-array blk, n-cell-arrays C, X, and an
-% m*n-cell-array A as follows:
-% The j-th block C{j} and the blocks A{i,j} for i = 1 : m
-% are real symmetric matrices of common size s_j, and
-%    blk{j,1} = 's', blk{j,2} = s_j
-% The blocks C{j} and A{i,j} must be stored as individual
-% matrices in dense or sparse format.
+%   [fU,X,lb] = VSDPUP(blk,A,C,b,Xt,yt,Zt)
+%      The problem data (blk,A,C,b) of the block-diagonal problem is described
+%      in 'mysdps.m'.  A, C, and b may be floating-point or interval quantities.
 %
-% The input A, C and the m-vector b
-% may be floating-point or interval quantities.
+%      The inputs Xt,yt, and Zt are an approximate floating-point solution or
+%      initial starting point for the primal (this is Xt) and the dual problem
+%      (this is yt and Zt) that are computed with 'mysdps'.
 %
-% Xt,yt,Zt    approximate floating-point solution or initial
-%             starting point for the primal (this is Xt) and
-%             the dual problem (this is yt, Zt).
+%      The function returns:
 %
+%         fU   A rigorous upper bound of the minimum value for all real input
+%              data (A,C,b) within the interval input data.  fU = inf, if no
+%              finite rigorous upper bound can be computed.
 %
-% [fU, X, lb] = VSDPUP(blk,A,C,b,Xt,yt,Zt) returns
-%       fU    a rigorous upper bound of the minimum value
-%             for all real input data (C,A,b) within the
-%             interval input data.
-%             fU = inf, if no finite rigorous upper bound
-%             can be computed.
-%        X    =NAN and lb=repmat(NaN,n,1), if primal feasibility is not verified.
-%             Otherwise, X is an interval quantity which contains a primal
-%             feasible solution (certificate) of the block-diagonal
-%             problem for all real input data within the interval data, and
-%        lb   is a n-vector, where lb(j) is a rigorous lower bound of
-%             the smallest eigenvalue of block X{j}. lb > 0 means
-%             that all symmetric matrices within the interval
-%             matrix X are rigorously certified as positiv definite.
-%             In this case, the existence of strictly feasible solutions
-%             and strong duality is proved.
+%          X   =NAN and lb=NaN(n,1), if primal feasibility is not verified.
+%              Otherwise, X is an interval quantity which contains a primal
+%              feasible solution (certificate) of the block-diagonal problem
+%              for all real input data within the interval data.
 %
-% [fU, X, lb] = VSDPUP(blk,A,C,b,Xt,yt,Zt, yu) returns a rigorous
-%             upper bound fU of the dual optimal value, where
-%             the following dual boundedness assumption is assumed:
-%             an optimal dual solution y satisfies
-%                     -yu <= y <= yu,  yu nonnegative m-vector.
+%         lb   An n-vector, where lb(j) is a rigorous lower bound of the
+%              smallest eigenvalue of block X{j}.  lb > 0 means that all
+%              symmetric matrices within the interval matrix X are rigorously
+%              certified as positiv definite.  In this case, the existence of
+%              strictly feasible solutions and strong duality is proved.
 %
-% We recommend to use infinite bounds yu instead of unreasonable
-% large bounds yu. This improves the quality of the lower bound
-% in many cases, but may increase the computational time.
+%   [...] = VSDPUP(...,yu)
+%      Optionally, finite upper bounds yu in form of a nonnegative m-vector can
+%      be provided.  The following dual boundedness assumption is assumed:
+%      an optimal dual solution y satisfies
 %
-% EXAMPLE:
-% C{1} = [1 0; 0 1];
-% A{1,1} = [0 1; 1 0];
-% A{2,1} = [1 1; 1 1];
-% b = [1;2.0001];
-% blk{1,1} = 's'; blk{1,2} = 2;
-% [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b); % Computes approximations
-% [fU, X, lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
-% intvalinit('displaymidrad'); format short e;
-% fU, X{1},lb
-% fU =
-%   1.0001e+000
-% intval ans =
-% <  5.0005e-001, 2.1337e-010> <  5.0000e-001, 0.0000e+000>
-% <  5.0000e-001, 0.0000e+000> <  5.0005e-001, 2.1337e-010>
-% lb =
-%   5.0000e-005
+%         -yu(i) <= y(i) <= yu(i),  i = 1:m.
 %
+%      We recommend to use infinite bounds yu(i) instead of unreasonable large
+%      bounds yu(i).  This improves the quality of the lower bound in many cases,
+%      but may increase the computational time.
+%
+%   Example:
+%
+%       blk(1,:) = {'s'; 2};
+%       A{1,1} = [0 1; 1 0];
+%       A{2,1} = [1 1; 1 1];
+%         C{1} = [1 0; 0 1];
+%            b = [1; 2.0001];
+%       [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b); % Computes approximations
+%       [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
+%
+%   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 

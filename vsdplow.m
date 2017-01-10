@@ -1,70 +1,56 @@
-function [fL, Y, dl] = vsdplow(blk,A,C,b,Xt,yt,Zt,xu)
-% VSDPLOW Verified Semidefinite Programming Lower Bound
-%         for the minimum value of the block-diagonal problem
+function [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt,xu)
+% VSDPLOW  Rigorous upper bound for the min. value of the block-diagonal problem:
 %
-%         min  sum(j=1:n| <C{j}, X{j}>)
-%         s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i) for i = 1 : m
-%              X{j} must be positive semidefinite for j = 1 : n
+%         min  sum(j=1:n| <  C{j}, X{j}>)
+%         s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i)  for i = 1:m
+%              X{j} must be positive semidefinite for j = 1:n
 %
-%         Moreover, a certificate of feasibility for LMI's is provided.
+%   Moreover, a rigorous certificate of feasibility for LMI's is provided.
 %
-% The block-diagonal structure is described
-% by an n*2-cell-array blk, n-cell-arrays C, X, and an
-% m*n-cell-array A as follows:
-% The j-th block C{j} and the blocks A{i,j} for i = 1 : m
-% are real symmetric matrices of common size s_j, and
-%    blk{j,1} = 's', blk{j,2} = s_j
-% The blocks C{j} and A{i,j} must be stored as individual
-% matrices in dense or sparse format.
+%   [fU,X,lb] = VSDPLOW(blk,A,C,b,Xt,yt,Zt)
+%      The problem data (blk,A,C,b) of the block-diagonal problem is described
+%      in 'mysdps.m'.  A, C, and b may be floating-point or interval quantities.
 %
-% The input A, C and the m-vector b
-% may be floating-point or interval quantities,
+%      The inputs Xt,yt, and Zt are an approximate floating-point solution or
+%      initial starting point for the primal (this is Xt) and the dual problem
+%      (this is yt and Zt) that are computed with 'mysdps'.
 %
-% Xt,yt,Zt    approximate floating-point solution or initial
-%             starting point for the primal (this is Xt) and
-%             the dual problem (this is yt, Zt).
+%      The function returns:
 %
-% [fL, Y, dl] = VSDPLOW(blk,A,C,b,Xt,yt,Zt) returns
-%        fL   a rigorous lower bound of the minimum value
-%             for all real input data (C,A,b) within the
-%             interval input data.
-%             fL = -inf, if no finite rigorous lower bound
-%             can be computed.
-%        Y    =NAN and dl=repmat(NaN,n,1), if dual feasibility is not verified.
-%             Otherwise, Y is a floating-point vector which is for all
-%             real input data (C,A,b) within the interval input data a dual
-%             feasible solution (i.e. LMI certificate of feasibility), and
-%        dl   is a n-vector, where dl(j)is a rigorous lower bound of
-%             the smallest eigenvalue of C(j)-sum(i=1:m| Y(i)*A{j,i}).
-%             dl > 0 implies the existence of strictly dual feasible solutions
-%             and strong duality.
+%         fL   A rigorous lower bound of the minimum value for all real input
+%              data (A,C,b) within the interval input data.  fL = -inf, if no
+%              finite rigorous lower bound can be computed.
 %
-% [fL, Y, dl] = VSDPLOW(blk,A,C,b,Xt,yt,Zt,xu) returns a rigorous lower
-%             bound of the primal minimum value for the above SDP-problem,
-%             where upper bounds xu(j) (j = 1,...,n) for the
-%             maximal eigenvalues of some optimal X(j) are known.
-%             The upper bounds xu(j) also may be equal to infinity.
+%          Y   =NAN and dl=NaN(n,1), if dual feasibility is not verified.
+%              Otherwise, Y is a floating-point vector which is for all
+%              real input data (C,A,b) within the interval input data a dual
+%              feasible solution (i.e. LMI certificate of feasibility)
 %
+%         dl   is a n-vector, where dl(j)is a rigorous lower bound of
+%              the smallest eigenvalue of C(j)-sum(i=1:m| Y(i)*A{j,i}).
+%              dl > 0 implies the existence of strictly dual feasible solutions
+%              and strong duality.
 %
-% We recommend to use infinite bounds xu(j) instead of unreasonable
-% large bounds xu(j). This improves the quality of the lower bound
-% in many cases, but may increase the computational time.
+%   [...] = VSDPLOW(...,xu)
+%      Optionally, finite upper bounds xu in form of a nonnegative n-vector can
+%      be provided for the case that upper bounds xu(j), j = 1:n, for the
+%      maximal eigenvalues of some optimal X(j) are known.
 %
-% EXAMPLE:
-% C{1} = [1 0; 0 1];
-% A{1,1} = [0 1; 1 0];
-% A{2,1} = [1 1; 1 1];
-% b = [1;2.0001];
-% blk{1,1} = 's'; blk{1,2} = 2;
-% [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b); % Computes approximations
-% [fL, Y, dl] = vsdplow(blk,A,C,b,Xt,yt,Zt)
-% fL =
-%     1.0001
-% Y =
-%    -1.0000
-%     1.0000
-% dl =
-%   9.3912e-011
+%      We recommend to use infinite bounds xu(j) instead of unreasonable large
+%      bounds xu(j).  This improves the quality of the lower bound in many
+%      cases, but may increase the computational time.
+%
+%   Example:
+%
+%       blk(1,:) = {'s'; 2};
+%       A{1,1} = [0 1; 1 0];
+%       A{2,1} = [1 1; 1 1];
+%         C{1} = [1 0; 0 1];
+%            b = [1; 2.0001];
+%       [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b); % Computes approximations
+%       [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
+%
+%   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
