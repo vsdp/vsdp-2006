@@ -47,7 +47,7 @@
 %
 % This structure is described with the cell-array
 %
-%   blk{j,1} = 's'; blk{j,2} = s_j;
+%   blk(j,:) = {'s'; s_j};
 %
 % For the purpose of illustration, we start with the following semidefinite
 % programming problem of dimension |m = 4|, |n = 1|, and |s_1 = 3|, i.e. the
@@ -79,7 +79,7 @@ A{4,1} = [0 0 0;
 
 b = [1; 2*DELTA; 0; 0];
 
-blk{1,1} = 's'; blk{1,2} = 3;
+blk(1,:) = {'s'; 3};
 
 
 %%
@@ -188,6 +188,13 @@ format longE
 % obtain the same output:
 %
 
+%%
+% *Note:* tiny pertubation of |yt| neccessary to work with the approximation 
+% from SDPT3-4.0 for this particular example.
+%
+%   yt(2) = yt(2) - DELTA;
+%
+
 xu = 1e5;
 [fL, Y, dl] = vsdplow(blk,A,C,b,Xt,yt,Zt,xu)
 
@@ -261,8 +268,7 @@ yu = 1e5 * [1 1 1 1]';
 [fU, X, lb] = vsdpup(blk,A,C,b,Xt,yt,Zt,yu)
 
 %%
-% Using SDPT3, we obtain a reasonable bound as before.  For SDPA the
-% approximations yield a finite overestimated upper bound.
+% For this example the upper bound is worse than the previous one.
 %
 
 
@@ -346,7 +352,7 @@ C{1} = [0 0; 0 0];
 A{1,1} = [1 0; 0 0];
 A{2,1} = [0 1; 1 0.005];
 b = [-0.01 1]';
-blk{1,1} = 's'; blk{1,2} = 2;
+blk(1,:) = {'s'; 2};
 
 %%
 % is primal infeasible, since the first primal equation implies
