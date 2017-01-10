@@ -77,6 +77,13 @@ if VSDP_CHOICE_SDP == 1
   OPTIONS.rmdepconstr    = 0;
   OPTIONS.cachesize      = 256;
   OPTIONS.smallblkdim    = 15;
+  
+  % for SDPT3-4.0
+  if (exist('sqlpmain.m', 'file')) % did not exist in SDPT3-3.02
+    OPTIONS = sqlparameters();
+    OPTIONS.printlevel = 0;        % default: 3
+  end
+  
   A = A';
   
   if (nargin <= 5) || (VSDP_USE_STARTING_POINT == 0)
@@ -87,7 +94,7 @@ if VSDP_CHOICE_SDP == 1
   
   % for SDPT3-4.0
   if (isstruct(info) && isfield(info, 'termcode'))
-    info = info.termcode; 
+    info = info.termcode;
   end
   
 elseif VSDP_CHOICE_SDP == 2
