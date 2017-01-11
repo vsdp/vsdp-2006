@@ -1,18 +1,16 @@
 function [blk,A,C,b] = sdpa_to_vsdp(fname)
-%SDPA_TO_VSDP: Read in a problem in SDPA sparse format
-%              and convert it to VSDP format.
+% SDPA_TO_VSDP  Import problem in SDPA sparse format to VSDP's format.
 %
-% fname = name of the file containing SDP data in
-%                 SDPA format.
+%   [blk,A,C,b] = sdpa_to_vsdp(fname)  The input 'fname' name of the file
+%      containing SDP data in SDPA format.  The problem data (blk,A,C,b) of
+%      VSDP's block-diagonal problem is described in 'mysdps.m'.
 %
-% The block-diagonal structure is of VSDP is described
-% by an n*2-cell-array blk, n-cell-arrays C, X, and an
-% m*n-cell-array A as follows:
-% The j-th block C{j} and the blocks A{i,j} for i = 1 : m
-% are real symmetric matrices of common size s_j, and
-%    blk{j,1} = 's', blk{j,2} = s_j
-% The blocks C{j} and A{i,j} must be stored as individual
-% matrices in dense or sparse format.
+%   Example:
+%
+%       fname = fullfile('sdplib_vsdp', 'arch4.dat-s');
+%       [blk,A,C,b] = sdpa_to_vsdp(fname);
+%
+%   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
