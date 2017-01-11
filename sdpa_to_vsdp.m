@@ -16,13 +16,13 @@ function [blk,A,C,b] = sdpa_to_vsdp(fname)
 
 %Open the file for input
 compressed = 0;
-if exist(fname)
+if exist(fname,'file')
   fid = fopen(fname,'r');
-elseif exist([fname,'.Z'])
+elseif exist([fname,'.Z'],'file')
   compressed = 1;
   unix(['uncompress ',fname,'.Z']);
   fid = fopen(fname,'r');
-elseif exist([fname,'.gz'])
+elseif exist([fname,'.gz'],'file')
   compressed = 2;
   unix(['gunzip ',fname,'.gz']);
   fid = fopen(fname,'r');
