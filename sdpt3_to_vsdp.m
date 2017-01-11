@@ -41,6 +41,8 @@ C = Ct;
 m = length(b);
 n = length(C);
 
+A = cell(m,n);
+
 for j = 1 : n
   Atj = At{j};
   %full(Atj)
