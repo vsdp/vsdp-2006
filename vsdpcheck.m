@@ -1,20 +1,22 @@
-function [m, n] = vsdpcheck(blk,A,C,b,X0,y0,Z0)
-% VSDPCHECK: routine for checking the VSDP format
-%        of the block-diagonal sdp problem:
-%        min  sum(j=1:n| <C{j}, X{j}>),
-%        s.t. sum(j=1:n| <A{i,j}, X{j}> = b(i)) for i = 1 : m,
-%             X{j} positive semidefinite for j = 1 : n,
-%        A, C, b can be real  or interval quantities.
+function [m,n] = vsdpcheck(blk,A,C,b,X0,y0,Z0)
+% VSDPCHECK  routine for checking the VSDP format.
 %
-% The block-diagonal structure of VSDP is
-% described by an n*2 cell array named blk as follows:
-% If the j-th block of C and the blocks A{i,j} for i = 1 : m
-% are single real symmetric matrices of common size s_j, then
-%         blk{j,1} = 's', blk{j,2} = [s_j]
+%   [m,n] = vsdpcheck(blk,A,C,b)  
+%      The block-diagonal format is explained in 'mysdps.m'.
 %
-% A is a m*n  cell array containing the matrices A{i,j}.
-% C is a n-cell containing the block matrices C{j} for
-% j = 1,...,n.
+%   [...] = vsdpcheck(...,X0,y0,Z0) optionally the format of an initial guess
+%      (X0,y0,Z0) is checked as well.
+%
+%   Example:
+%
+%       blk(1,:) = {'s'; 2};
+%       A{1,1} = [0 1; 1 0];
+%       A{2,1} = [1 1; 1 1];
+%         C{1} = [1 0; 0 1];
+%            b = [1; 2.0001];
+%       [m,n] = vsdpcheck(blk,A,C,b);
+%
+%   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
