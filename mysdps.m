@@ -14,7 +14,7 @@ function [obj,X,y,Z,info] = mysdps(blk,A,C,b,X0,y0,Z0)
 %         'blk'  cell(n,2)
 %         'A'    cell(m,n)
 %         'C'    cell(n,1)
-%         'b'  double(n,1)
+%         'b'  double(m,1)
 %
 %      The j-th block C{j} and the blocks A{i,j}, for i = 1:m, are real
 %      symmetric matrices of common size s_j, and blk(j,:) = {'s'; s_j}.
