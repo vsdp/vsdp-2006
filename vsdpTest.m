@@ -93,6 +93,24 @@ verifyEqual(testCase, sup(lambda), lambda_sup, 'RelTol', 1e-4)
 verifyEqual(testCase, sup(lambda), lambda_sup, 'RelTol', 1e-4)
 end
 
+function testVULS(testCase)
+A = [1 1 1 1];
+B = [0 1 0 infsup(0.9,1.1)];
+a = infsup(2.9,3.1);
+b = 2;
+xl = [0 1 0 0]';
+xu = [4 1 1 2]';
+x0 = [0 1 0 1]';
+[X,J,I,N] = vuls(A,a,B,b,xl,xu,x0);
+X_ref = infsup([0; 1; 0; 0.8878],[0.0001; 1; 0.0001; 1.1122]);
+verifyEqual(testCase, all(in(X,X_ref)), true)
+verifyEqual(testCase, isempty(J.ineqlin), true)
+verifyEqual(testCase, isempty(J.lower), true)
+verifyEqual(testCase, isempty(J.upper), true)
+verifyEqual(testCase, I, 4)
+verifyEqual(testCase, N, [1, 2, 3]')
+end
+
 function [blk,A,C,b] = example1()
 blk(1,:) = {'s'; 2};
 C{1}   = [1 0; 0 1];
