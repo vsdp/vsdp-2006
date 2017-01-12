@@ -1,5 +1,5 @@
 function lambda = veigsym(A)
-% VEIGSYM  verified enclosure for all eigenvalues of a symmetric matrix
+% VEIGSYM  Verified enclosure for all eigenvalues of a symmetric matrix.
 %
 %   lambda = VEIGSYM(A) a verified enclosure for all eigenvalues of matrix 'A'
 %      in form of an interval vector 'lambda' is computed.  The matrix 'A' must
