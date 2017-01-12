@@ -1,36 +1,41 @@
 function A = vsmat(vA,blk,sparseflag,mult)
-%A = VSMAT(vA,blk,sparseflag,mult) is the inverse operation of
-%    vA = VSVEC(A,sparseflag,1/mult), and returns the
-%    blocks of the diagonal matrix A = diag(A{1}, ..., A{l}).
+% VSMAT  Inverse operation of 'vsvec'.
 %
-%The blocks A{j} are real or interval matrices of size blk(j) for j = 1 : l,
-%and they are stored as a cell array.
-%If sparseflag = 0, VSMAT returns full blocks and sparse blocks otherwise.
-%The default is sparseflag = 0. Default for the multiplier is mult = 1/sqrt(2).
+%   For a comprehensive explanation, see 'vsvec.m'.
 %
-%The concatenated vector vA is of length sum{blk(j)*(blk(j)+1)/2: j=1, .. ,l},
-%and the blocks A{j} are stored in vA as follows:
-%        vA = [A{1}(1,1),mult*A{1}(2,1), ... ,mult*A{1}(blk(1),1)
-%              A{1}(2,2),mult*A{1}(3,2), ... ,mult*A{1}(blk(1),2)
-%              A{1}(3,3), ... , A{1}(blk(1),blk(1)), A{2}(1,1), ...].
-%In the case of mult = sqrt(2), the inner product of symmetric matrices A, B
-%satisfies the identity
-%              <A,B> = VSVEC(A,blk)' * VSVEC(B,blk)
-%If one wishes to avoid rounding errors, then the use of
-%              <A,B> = VSVEC(A,blk,0,2)' * VSVEC(B,blk,0,1)
-%is preferable.
+%   A = VSMAT(vA,blk) is the inverse operation of 'vsvec', such that
 %
-%EXAMPLE:
-%A1 = ones(3,3); A1(3,1) = 3; A1(1,3) = 3;
-%A{1} = A1; blk(1) = 3;
-%vA = vsvec(A,0,sqrt(2));
-%AA = vsmat(vA,blk,0,1/sqrt(2));
-%AA{1}
-%ans =
-%     1     1     3
-%     1     1     1
-%     3     1     1
+%         isequal(A,vsmat(vsvec(A),blk))
 %
+%      evaluates true, given the correct block dimensions 'blk' of 'A'.  The
+%      returned matrix is a block diagonal matrix with n blocks.
+%
+%      'vA'   A full or sparse vector of lengh sum(j=1:n |blk(j)*(blk(j)+1)/2),
+%             for example created by 'vsvec(A)'.
+%
+%      'blk'  An n-vector where each element blk(j) represents the block size
+%             of the resulting block diagonal matrix block A{j}.
+%
+%   VSMAT(...,sparseflag) optionally decide whether to return only full matrix
+%      blocks using 'sparseflag = 0' (default) or only sparse matrix blocks
+%      using 'sparseflag = 1'.
+%
+%   VSMAT(...,sparseflag,mult) optionally use 'sparseflag' as before and
+%      specifiy another scaling factor for the off-diagonal elements of the
+%      resulting block-diagonal matrix.  The default scaling factor is
+%      1/sqrt(2).
+%
+%   Example:
+%
+%       A = {[10  2  3;
+%             2 11  4;
+%             3  4 12];
+%           ones(3)};
+%      vA = vsvec(A,0,2);
+%     blk = [3; 3];
+%      AA = vsmat(vA,blk,0,1/2);
+%
+%   See also vsvec.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 

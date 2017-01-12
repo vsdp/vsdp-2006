@@ -1,29 +1,54 @@
 function vA = vsvec(A,sparseflag,mult)
-%VSVEC:  returns the concatenated vector vA which corresponds to the
-%        block diagonal matrix A = diag(A{1}, ..., A{l}).
+% VSVEC  Vectorize a symmetric block diagonal matrix.
 %
-%The blocks A{i} may be a real or interval matrices, and must be stored
-%as a cell array. If sparseflag = 0, VSVEC returns a full vector and
-%a sparse vector otherwise. The default is sparseflag = 0.
-%Default for the real multiplier is mult = sqrt(2).
+%   Given a block diagonal matrix A with n blocks:
 %
-%The concatenated vector vA of length sum{blk(j)*(blk(j)+1)/2 : j=1, .. ,l},
-%where blk(j) denotes the size of the j-th bock, is defined as
-%        vA = [A{1}(1,1),mult*A{1}(2,1), ... ,mult*A{1}(blk(1),1)
-%              A{1}(2,2),mult*A{1}(3,2), ... ,mult*A{1}(blk(1),2)
-%              A{1}(3,3), ... , A{1}(blk(1),blk(1)), A{2}(1,1), ...],
-%and satisfies in the case of mult = sqrt(2) for the
-%inner product of symmetric matrices A, B the identity
-%              <A,B> = VSVEC(A,blk)' * VSVEC(B,blk)
-%If one wishes to avoid rounding errors then the use of
-%              <A,B> = VSVEC(A,blk,0,2)' * VSVEC(B,blk,0,1)
-%is preferable.
+%           [A{1}         ]
+%       A = [     ...     ]
+%           [         A{n}]
 %
-%EXAMPLE:
-%A{1} = ones(3,3); vA = vsvec(A); vA'
-%ans =
-%    1.0000    1.4142    1.4142    1.0000    1.4142    1.0000
+%   stored as cell(n,1)-array.  Each of the j = 1:n blocks represents a
+%   symmetric matrix of dimension blk(j).  VSVEC vectorizes the triangular
+%   lower matrix of each of the n blocks in the following way:
 %
+%                                            [a     ]
+%              [a b c]                       [b*mult]
+%       A{j} = [b d e]   ==>   vsvec(A(j)) = [c*mult]
+%              [c e f]                       [d     ]
+%                                            [e*mult]
+%                                            [f     ]
+%
+%   The off diagnoal elements are scaled with 'mult'.  The resulting column
+%   vector of all n blocks has a length of sum(j=1:n |blk(j)*(blk(j)+1)/2).
+%
+%   vA = VSVEC(A) returns a full vector with off-diagonal elements scaled with
+%      'mult = sqrt(2)'.
+%
+%   VSVEC(...,sparseflag) optionally decide whether to return a full vector
+%      using 'sparseflag = 0' (default) or a sparse vector using
+%      'sparseflag = 1'.
+%
+%   VSVEC(...,sparseflag,mult) optionally use 'sparseflag' as before and
+%      specifiy another scaling factor for the off-diagonal elements.  The
+%      default scaling factor is 'mult = sqrt(2)'.
+%
+%   The function VSVEC is useful for efficiently computing the inner product
+%   of symmetric block diagonal matrices A, B, using the identity
+%
+%              <A,B> = VSVEC(A)'     * VSVEC(B)
+%                    = VSVEC(A,0,2)' * VSVEC(B,0,1).
+%
+%   The latter identity is preferable, if one wishes to avoid rounding errors.
+%
+%   Example:
+%
+%      A = {[10  2  3;
+%             2 11  4;
+%             3  4 12];
+%           ones(3)};
+%      vA = vsvec(A,0,2);
+%
+%   See also vsmat.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
