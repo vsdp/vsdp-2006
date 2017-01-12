@@ -1,63 +1,61 @@
-function [X, J, I, N] = vuls(A, a, B, b, xl, xu, x0, I, N)
-% VULS: Verification for Underdetermined Linear Systems
-%       of inequalities and equations:
-%              A * x <= a,
-%              B * x  = b,
-%              xl <= x <= xu
-% The input A (m*n matrix), a (m-vector), B (p*n matrix), and  b (p-vector)
-% can be real or interval quantities; the simple bounds xl, xu  must
-% be real, but may be infinite; the approximate solution x0 must be real.
-% The optional input vector I must contain p indices out of {1,...,n} such
-% that the submatrix B(:,I) is nonsingular; N contains the remaining n-p
-% nonbasic indices.
+function [X,J,I,N] = vuls(A,a,B,b,xl,xu,x0,I,N)
+% VULS  Verification for underdetermined linear systems.
 %
-% Output:
-%      X   a box (n-interval vector), containing for every real
-%          input (A,a,B,b)  within the interval input data a  solution
-%          x of the above system, provided J is empty. Especially,
-%          existence of solutions is verified, and moreover
-%          X is computed close to x0 in a specified manner; for details see
-%          C. Jansson, Rigorous Lower and Upper Bounds in Linear
-%          Programming,  SIAM J. OPTIM. Vol.14, No.3, pp. 914-935.
+%   [X,J,I,N] = VULS(A,a,B,b,xl,xu,x0) Verification for underdetermined linear
+%      systems of inequalities and equations:
 %
-%          X := intval(repmat(NaN,n,1)), J = NaN; I = NaN; N = NaN;
-%          if existence of solutions cannot be proved, and verified finite
-%          bounds cannot be computed. This is the case, if
-%          (i) B has no full rank, or (ii) the linear interval solver
-%          VERIFYLSS cannot compute rigorous bounds, or (iii) the box
-%          of simple bounds [xl,xu] has no appropriate interior. Otherwise,
-%      J   returns the vector of indices of violated inequalities
-%          for X:
-%             J.ineqlin:  violated row indices of A * X <= b,
-%             J.lower: violated indices of  xl <= X ,
-%             J.upper: violated indices of  X <= xu .
-%      I   index vector such that the p*p submatrix B(:,I) is
-%          nonsingular,
-%      N   index vector containig the n-p indices of 1:n not in I.
+%         A * x <= a,
+%         B * x == b,
+%         xl <= x <= xu.
 %
-% EXAMPLE:
-% A = [1 1 1 1]; a =infsup(2.9,3.1) ;
-% B = [0 1 0 infsup(0.9,1.1)]; b = 2;
-% xl = [0 1 0 0]'; xu = [4 1 1 2]'; x0 = [0 1 0 1];
-% xl = [0 1 0 0]'; xu = [4 1 1 2]'; x0 = [0 1 0 1];
-% [X,J,I,N] = vuls(A, a, B, b, xl, xu, x0)
-% gives the output:
-% intval X =
-% [    0.0000,    0.0001]
-% [    1.0000,    1.0000]
-% [    0.0000,    0.0001]
-% [    0.8878,    1.1122]
-% J =
-%     ineqlin: []
-%       lower: [0x1 double]
-%       upper: [0x1 double]
-% I =
-%      4
-% N =
-%      1
-%      2
-%      3
+%      The input A (m*n matrix), a (m-vector), B (p*n matrix), and  b (p-vector)
+%      can be real or interval quantities.  The simple bounds xl and xu must be
+%      real, but may be infinite.  The approximate solution x0 must be real.
 %
+%      The output is:
+%
+%         'X'  A box (n-interval vector), containing for every real input
+%              (A,a,B,b) within the interval input data a solution x of the
+%              above system, provided J is empty.  Especially, the existence
+%              of solutions is verified.  Moreover, X is computed close to x0
+%              in a specified manner.  For details see [Jansson2004] in
+%              'README.md'.
+%
+%              If existence of solutions cannot be proved and verified finite
+%              bounds cannot be computed, then X = intval(NaN(n,1)) and
+%              J = I = N = NaN.  This is the case, if
+%
+%              1. B has no full rank, or
+%              2. the linear interval solver cannot compute rigorous bounds, or
+%              3. the box of simple bounds [xl,xu] has no appropriate interior.
+%
+%         'J'  A structure of index vectors of violated inequalities for X:
+%
+%              J.ineqlin: violated row indices of A * X <= b,
+%              J.lower:   violated row indices of xl <= X ,
+%              J.upper:   violated row indices of X <= xu .
+%
+%         'I'  An index vector such that the p*p submatrix B(:,I) is
+%              nonsingular.
+%
+%         'N'  An index vector containig the n-p indices of 1:n, that are not
+%              in I.
+%
+%   VULS(...,I,N) Optionally provide the index vectors with the same definition
+%      as the corresponding output values above.
+%
+%   Example:
+%
+%       A = [1 1 1 1];
+%       B = [0 1 0 infsup(0.9,1.1)];
+%       a = infsup(2.9,3.1);
+%       b = 2;
+%       xl = [0 1 0 0]';
+%       xu = [4 1 1 2]';
+%       x0 = [0 1 0 1]';
+%       [X,J,I,N] = vuls(A,a,B,b,xl,xu,x0);
+%
+%   See also vsdpinfeas, vsdpup.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
