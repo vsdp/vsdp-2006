@@ -12,6 +12,10 @@ problems.  This package supports interval input data and sparse format.
 
 ## References
 
-- C. Jansson, Termination and Verification for Ill-posed Semidefinite
-  Programming Problems,
+- [Jansson2005] C. Jansson, Termination and Verification for Ill-posed
+  Semidefinite Programming Problems,
   http://www.optimization-online.org/DB_HTML/2005/06/1150.html
+
+- [Jansson2004] C. Jansson, Rigorous Lower and Upper Bounds in Linear
+  Programming, SIAM J. OPTIM. Vol.14, No.3, pp. 914-935,
+  https://dx.doi.org/10.1137/S1052623402416839
