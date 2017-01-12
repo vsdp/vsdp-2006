@@ -53,6 +53,7 @@ end
 
 start = 1;
 ende = 0;
+A = cell(l,1);
 for j = 1:l
   blocksize = blk(j);
   blocklength = blocksize*(blocksize+1)/2;
