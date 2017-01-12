@@ -19,6 +19,80 @@ function tests = vsdpTest
 tests = functiontests(localfunctions);
 end
 
+function testVSVEC(testCase)
+vsvec_len = @(blk) sum(blk .* (blk + 1) ./ 2);
+A = {ones(3)};
+vAref = [1 sqrt(2) sqrt(2) 1 sqrt(2) 1]';
+vA = vsvec(A);
+verifyEqual(testCase, vA, vAref)
+verifyEqual(testCase, length(vA), vsvec_len(3))
+vA = vsvec(A,0);
+verifyEqual(testCase, vA, vAref)
+verifyEqual(testCase, length(vA), vsvec_len(3))
+vAref = sparse(vAref);
+verifyEqual(testCase, vsvec(A,1), vAref)
+A = {[10 2 3; 2 11  4; 3 4 12]; ones(3)};
+vAref = [10 4 6 11 8 12 1 2 2 1 2 1]';
+vA = vsvec(A,0,2);
+verifyEqual(testCase, vA, vAref)
+verifyEqual(testCase, length(vA), 2*vsvec_len(3))
+A = {[10 2 3; 2 11  4; 3 4 12]; sparse(ones(3))};
+vA = vsvec(A,0,2);
+verifyEqual(testCase, vA, vAref)
+verifyEqual(testCase, length(vA), 2*vsvec_len(3))
+end
+
+function testVSMAT(testCase)
+AA = {{ones(3)};
+  {[10 2 3; 2 11  4; 3 4 12]; ones(3)};};
+for i = 1:length(AA)
+  A = AA{i};
+  blk = zeros(length(A),1);
+  for j = 1:length(A)
+    blk(j) = length(A{j});
+  end
+  % test full input + full output
+  % default call
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A),blk)), true)
+  % sparseflag = 0
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A),blk,0)), true)
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A,0),blk)), true)
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A,0),blk,0)), true)
+  % intermediate sparse vector
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A,1),blk,0)), true)
+  % sparseflag = 0 + different mults
+  mult = [sqrt(2), 2, 1];
+  for j = 1:length(mult)
+    verifyEqual(testCase, ...
+      isequal(A,vsmat(vsvec(A,0,mult(j)),blk,0,1/mult(j))), true)
+  end
+  % test sparse input + sparse output
+  for j = 1:length(A)
+    A{j} = sparse(A{j});
+  end
+  % intermediate full vector
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A,0),blk,1)), true)
+  % intermediate sparse vector
+  verifyEqual(testCase, isequal(A,vsmat(vsvec(A,1),blk,1)), true)
+end
+end
+
+function testVEIGSYM(testCase)
+A = [1 2 3; 2 1 4; 3 4 5];
+% test real input
+lambda = veigsym(A);
+verifyEqual(testCase, mid(lambda), eig(A), 'RelTol', 2*eps())
+verifyEqual(testCase, rad(lambda), zeros(3,1), 'AbsTol', 1e-14)
+% test interval input
+lambda_inf = [-1.5170; -0.6226; 9.0495];
+lambda_sup = [-1.4569; -0.5625; 9.1096];
+A = midrad(A, 1e-2*ones(3));
+lambda = veigsym(A);
+verifyEqual(testCase, inf(lambda), lambda_inf, 'RelTol', 1e-4)
+verifyEqual(testCase, sup(lambda), lambda_sup, 'RelTol', 1e-4)
+verifyEqual(testCase, sup(lambda), lambda_sup, 'RelTol', 1e-4)
+end
+
 function [blk,A,C,b] = example1()
 blk(1,:) = {'s'; 2};
 C{1}   = [1 0; 0 1];
