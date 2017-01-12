@@ -1,7 +1,7 @@
 function [blk,A,C,b] = sdpa_to_vsdp(fname)
 % SDPA_TO_VSDP  Import problem in SDPA sparse format to VSDP's format.
 %
-%   [blk,A,C,b] = sdpa_to_vsdp(fname)  The input 'fname' name of the file
+%   [blk,A,C,b] = SDPA_TO_VSDP(fname)  The input 'fname' name of the file
 %      containing SDP data in SDPA format.  The problem data (blk,A,C,b) of
 %      VSDP's block-diagonal problem is described in 'mysdps.m'.
 %

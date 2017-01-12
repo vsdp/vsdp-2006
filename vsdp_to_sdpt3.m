@@ -1,7 +1,7 @@
 function [At,Ct] = vsdp_to_sdpt3(blk,A,C,b)
 % VSDP_TO_SDPT3  Convert VSDP to SDPT3 format.
 %
-%   [At,Ct] = vsdp_to_sdpt3(blk,A,C,b)
+%   [At,Ct] = VSDP_TO_SDPT3(blk,A,C,b)
 %      The block-diagonal problem is:
 %
 %         min  sum(j=1:n| <  C{j}, X{j}>)
