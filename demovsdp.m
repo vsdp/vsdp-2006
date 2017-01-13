@@ -1,4 +1,4 @@
-%% Welcome to VSDP: Verified SemiDefinite Programming
+%% Demonstration of VSDP: Verified SemiDefinite Programming
 %
 % VSDP is a software package computing verified results for SDP-problems
 %

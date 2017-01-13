@@ -1,5 +1,5 @@
 function [m,n] = vsdpcheck(blk,A,C,b,X0,y0,Z0)
-% VSDPCHECK  routine for checking the VSDP format.
+% VSDPCHECK  Routine for checking the VSDP format.
 %
 %   [m,n] = VSDPCHECK(blk,A,C,b)  
 %      The block-diagonal format is explained in 'mysdps.m'.
