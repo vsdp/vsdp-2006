@@ -1,22 +1,65 @@
 function tests = vsdpTest
 % VSDPTEST  Runs a Matlab testsuite for VSDP (version 2006).
 %
-%   About the tests:
-%
-%    - example1      contained in the original documentation of vsdplow and
-%                    vsdpup
-%    - example2      contained in demovsdp
-%    - SDPLIB_ARCH4  contained in demovsdp
-%
 %   Example:
 %
 %       clc; table (runtests ('vsdpTest'))
 %
-%   See also vsdpcheck.
+%   See also demovsdp.
 
 % Copyright 2016-2017 Kai T. Ohlhus (kai.ohlhus@tuhh.de)
 
 tests = functiontests(localfunctions);
+end
+
+function [blk,A,C,b] = example_feasible()
+blk(1,:) = {'s'; 2};
+A{1,1} = [0 1; 1 0];
+A{2,1} = [1 1; 1 1];
+C{1}   = [1 0; 0 1];
+b = [1; 2.0001];
+end
+
+function [blk,A,C,b] = example_DELTA(DELTA)
+% DELTA > 0: the optimal value is -0.5, and strong duality holds,
+% DELTA = 0: ill-posed problem with nonzero duality gap,
+% DELTA < 0: primal and dual infeasible.
+C{1} = [ 0   1/2    0;
+  1/2 DELTA   0;
+  0    0   DELTA];
+A{1,1} = [  0  -1/2 0;
+  -1/2   0  0;
+  0    0  0];
+A{2,1} = [1 0 0;
+  0 0 0;
+  0 0 0];
+A{3,1} = [0 0 1;
+  0 0 0;
+  1 0 0];
+A{4,1} = [0 0 0;
+  0 0 1;
+  0 1 0];
+b = [1; 2*DELTA; 0; 0];
+blk(1,:) = {'s'; 3};
+end
+
+function [blk,A,C,b,DELTA] = example_DELTA_feasible()
+DELTA = 1e-4;
+[blk,A,C,b] = example_DELTA(DELTA);
+end
+
+function [blk,A,C,b,DELTA] = example_DELTA_infeasible()
+DELTA = -1e-4;
+[blk,A,C,b] = example_DELTA(DELTA);
+end
+
+function [blk,A,C,b] = example_primal_infeasible()
+DELTA = 0.1;%005;
+blk(1,:) = {'s'; 2};
+A{1,1} = [1 0; 0 0];
+A{2,1} = [0 1; 1 DELTA];
+C{1}   = [0 0; 0 0];
+b = [-0.01; 1];
 end
 
 function testVSVEC(testCase)
@@ -111,51 +154,36 @@ verifyEqual(testCase, I, 4)
 verifyEqual(testCase, N, [1, 2, 3]')
 end
 
-function [blk,A,C,b] = example1()
-blk(1,:) = {'s'; 2};
-C{1}   = [1 0; 0 1];
-A{1,1} = [0 1; 1 0];
-A{2,1} = [1 1; 1 1];
-b = [1; 2.0001];
-end
-
-function [blk,A,C,b,DELTA] = example2()
-DELTA = 1e-4;
-C{1} = [ 0   1/2    0;
-  1/2 DELTA   0;
-  0    0   DELTA];
-A{1,1} = [  0  -1/2 0;
-  -1/2   0  0;
-  0    0  0];
-A{2,1} = [1 0 0;
-  0 0 0;
-  0 0 0];
-A{3,1} = [0 0 1;
-  0 0 0;
-  1 0 0];
-A{4,1} = [0 0 0;
-  0 0 1;
-  0 1 0];
-b = [1; 2*DELTA; 0; 0];
-blk(1,:) = {'s'; 3};
-end
-
-function testVSDPCHECK_example1(testCase)
-[blk,A,C,b] = example1();
+function testVSDPCHECK_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
 [m,n] = vsdpcheck(blk,A,C,b);
 verifyEqual(testCase, m, 2)
 verifyEqual(testCase, n, 1)
 end
 
-function testVSDPCHECK_example2(testCase)
-[blk,A,C,b,~] = example2();
+function testVSDPCHECK_example_DELTA_feasible(testCase)
+[blk,A,C,b,~] = example_DELTA_feasible();
 [m,n] = vsdpcheck(blk,A,C,b);
 verifyEqual(testCase, m, 4)
 verifyEqual(testCase, n, 1)
 end
 
-function testSDPT3_conversion_example1(testCase)
-[blk,A,C,b] = example1();
+function testVSDPCHECK_example_DELTA_infeasible(testCase)
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[m,n] = vsdpcheck(blk,A,C,b);
+verifyEqual(testCase, m, 4)
+verifyEqual(testCase, n, 1)
+end
+
+function testVSDPCHECK_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[m,n] = vsdpcheck(blk,A,C,b);
+verifyEqual(testCase, m, 2)
+verifyEqual(testCase, n, 1)
+end
+
+function testSDPT3_conversion_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
 [At,Ct] = vsdp_to_sdpt3(blk,A,C,b);
 [AA,CC] = sdpt3_to_vsdp(blk,At,Ct,b);
 for i = 1:length(b)
@@ -164,8 +192,8 @@ end
 verifyEqual(testCase, CC, C)
 end
 
-function testSDPT3_conversion_example2(testCase)
-[blk,A,C,b,~] = example2();
+function testSDPT3_conversion_example_DELTA_feasible(testCase)
+[blk,A,C,b,~] = example_DELTA_feasible();
 [At,Ct] = vsdp_to_sdpt3(blk,A,C,b);
 [AA,CC] = sdpt3_to_vsdp(blk,At,Ct,b);
 for i = 1:length(b)
@@ -174,8 +202,28 @@ end
 verifyEqual(testCase, CC, C)
 end
 
-function [blk,A,C,b,X,y,Z] = testMYSDPS_example1(testCase)
-[blk,A,C,b] = example1();
+function testSDPT3_conversion_example_DELTA_infeasible(testCase)
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[At,Ct] = vsdp_to_sdpt3(blk,A,C,b);
+[AA,CC] = sdpt3_to_vsdp(blk,At,Ct,b);
+for i = 1:length(b)
+  verifyEqual(testCase, full(AA{i,1}), A{i,1})
+end
+verifyEqual(testCase, CC, C)
+end
+
+function testSDPT3_conversion_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[At,Ct] = vsdp_to_sdpt3(blk,A,C,b);
+[AA,CC] = sdpt3_to_vsdp(blk,At,Ct,b);
+for i = 1:length(b)
+  verifyEqual(testCase, full(AA{i,1}), A{i,1})
+end
+verifyEqual(testCase, CC, C)
+end
+
+function testMYSDPS_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
 [objt,X,y,Z,info] = mysdps(blk,A,C,b);
 verifyEqual(testCase, objt, [1, 1], 'RelTol', 1e-4)
 verifyEqual(testCase, X{1}, ones(2)/2, 'RelTol', 1e-4)
@@ -185,8 +233,8 @@ verifyEqual(testCase, Z{1}, C{1} - A{1,1}*y(1) - A{2,1}*y(2), 'RelTol', 1e-4)
 verifyEqual(testCase, info, 0)
 end
 
-function [blk,A,C,b,X,y,Z,DELTA] = testMYSDPS_example2(testCase)
-[blk,A,C,b,DELTA] = example2();
+function testMYSDPS_example_DELTA_feasible(testCase)
+[blk,A,C,b,DELTA] = example_DELTA_feasible();
 [objt,X,y,Z,info] = mysdps(blk,A,C,b);
 verifyEqual(testCase, objt, [-0.5 -0.5], 'RelTol', DELTA)
 testX = X{1};
@@ -205,16 +253,32 @@ verifyEqual(testCase, Z{1}, D, 'RelTol', DELTA)
 verifyEqual(testCase, info, 0)
 end
 
-function testVSDPUP_example1(testCase)
-[blk,A,C,b,Xt,yt,Zt] = testMYSDPS_example1(testCase);
+function testMYSDPS_example_DELTA_infeasible(testCase)
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[~,~,~,~,info] = mysdps(blk,A,C,b);
+% indication of primal infeasibility
+verifyEqual(testCase, info, 1)
+end
+
+function testMYSDPS_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[~,~,~,~,info] = mysdps(blk,A,C,b);
+% indication of primal infeasibility
+verifyEqual(testCase, info, 1)
+end
+
+function testVSDPUP_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fU, 1.0001, 'RelTol', 1e-4)
 verifyEqual(testCase, all (all (in (X{1}, midrad(ones(2)/2,5e-4)))), true)
 verifyEqual(testCase, lb, 5e-5, 'RelTol', 1e-4)
 end
 
-function testVSDPUP_example2(testCase)
-[blk,A,C,b,Xt,yt,Zt,DELTA] = testMYSDPS_example2(testCase);
+function testVSDPUP_example_DELTA_feasible(testCase)
+[blk,A,C,b,DELTA] = example_DELTA_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fU, -0.5, 'RelTol', DELTA)
 midX = [2*DELTA, -1, 0; -1, 1/(2*DELTA), 0; 0, 0, DELTA];
@@ -222,8 +286,9 @@ verifyEqual(testCase, all (all (in (X{1}, midrad(midX,DELTA)))), true)
 verifyEqual(testCase, lb, 1.289076539560735e-8, 'AbsTol', DELTA)
 end
 
-function testVSDPUP_example2_finite_bnd(testCase)
-[blk,A,C,b,Xt,yt,Zt,DELTA] = testMYSDPS_example2(testCase);
+function testVSDPUP_example_DELTA_feasible_finite_bnd(testCase)
+[blk,A,C,b,DELTA] = example_DELTA_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 yu = 1e5 * [1 1 1 1]';
 [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt,yu);
 % In this case: VSDPUP computes rigorously the finite upper bound without
@@ -233,16 +298,36 @@ verifyEqual(testCase, isnan(X), true)
 verifyEqual(testCase, isnan(lb), true)
 end
 
-function testVSDPLOW_example1(testCase)
-[blk,A,C,b,Xt,yt,Zt] = testMYSDPS_example1(testCase);
+function testVSDPUP_example_DELTA_infeasible(testCase)
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
+[fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
+verifyEqual(testCase, isinf(fU), true)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(lb), true)
+end
+
+function testVSDPUP_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
+[fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
+verifyEqual(testCase, isinf(fU), true)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(lb), true)
+end
+
+function testVSDPLOW_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fL, 1.0001, 'RelTol', 1e-4)
 verifyEqual(testCase, Y, [-1; 1], 'RelTol', 1e-4)
 verifyEqual(testCase, dl, 9.3912e-11, 'AbsTol', 1e-9)
 end
 
-function testVSDPLOW_example2(testCase)
-[blk,A,C,b,Xt,yt,Zt,DELTA] = testMYSDPS_example2(testCase);
+function testVSDPLOW_example_DELTA_feasible(testCase)
+[blk,A,C,b,DELTA] = example_DELTA_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fL, -0.5, 'RelTol', DELTA)
 verifyEqual(testCase, Y(2), -1/(4*DELTA), 'RelTol', DELTA)
@@ -250,8 +335,9 @@ verifyEqual(testCase, Y([1,3,4]), [0;0;0], 'AbsTol', DELTA)
 verifyEqual(testCase, dl, 4.319659051028185e-13, 'AbsTol', 1e-9)
 end
 
-function testVSDPLOW_example2_finite_bnd(testCase)
-[blk,A,C,b,Xt,yt,Zt,DELTA] = testMYSDPS_example2(testCase);
+function testVSDPLOW_example_DELTA_feasible_finite_bnd(testCase)
+[blk,A,C,b,DELTA] = example_DELTA_feasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 xu = 1e5;
 % FIXME: tiny pertubation neccessary to work with approximation from SDPT3-4.0
 yt(2) = yt(2) - DELTA/4;
@@ -260,6 +346,74 @@ verifyEqual(testCase, fL, -0.5, 'RelTol', DELTA)
 verifyEqual(testCase, Y(2), -1/(4*DELTA), 'RelTol', DELTA)
 verifyEqual(testCase, Y([1,3,4]), [0;0;0], 'AbsTol', DELTA)
 verifyEqual(testCase, dl, 4.319659051028185e-13, 'AbsTol', 1e-9)
+end
+
+function testVSDPLOW_example_DELTA_infeasible(testCase)
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
+[fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
+verifyEqual(testCase, isinf(fL), true)
+verifyEqual(testCase, isnan(Y), true)
+verifyEqual(testCase, isnan(dl), true)
+end
+
+function testVSDPLOW_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
+[fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
+verifyEqual(testCase, fL, 1, 'RelTol', eps())
+%TODO: verifyEqual(testCase, Y, [-1.010835012952675e2; -1.083501295267454e-2], 'RelTol', 1e-2)
+verifyEqual(testCase, dl > 0, true)
+end
+
+function testVSDPINFEAS_example_feasible(testCase)
+[blk,A,C,b] = example_feasible();
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+end
+
+function testVSDPINFEAS_example_DELTA_feasible(testCase)
+[blk,A,C,b,~] = example_DELTA_feasible();
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+end
+
+function testVSDPINFEAS_example_DELTA_infeasible(testCase)
+% Note: should result in 'isinfeas = 1' in any case, but this is out of scope
+% of VSDP.
+[blk,A,C,b,~] = example_DELTA_infeasible();
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+end
+
+function testVSDPINFEAS_example_primal_infeasible(testCase)
+[blk,A,C,b] = example_primal_infeasible();
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p');
+verifyEqual(testCase, isinfeas, 1)
+verifyEqual(testCase, isnan(X), true)
+%TODO: verifyEqual(testCase, Y, [-1.010835012952675e2; -1.083501295267454e-2], 'RelTol', 1e-2)
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d');
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
 end
 
 function testSDPLIB_ARCH4(testCase)
@@ -285,7 +439,7 @@ verifyEqual(testCase, n, 2)
 [AA,CC] = sdpt3_to_vsdp(blk,At,Ct,b);
 verifyEqual(testCase, CC, C)
 verifyEqual(testCase, AA, A, 'RelTol', 1e-8)
-% test SDPT3 mysdps
+% test mysdps
 [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
 verifyEqual(testCase, size(objt), [1, 2])
 verifyEqual(testCase, size(Xt), [2, 1])
@@ -294,14 +448,23 @@ verifyEqual(testCase, size(Zt), [2, 1])
 verifyEqual(testCase, objt(1), trace(C{1} * Xt{1}), 'RelTol', 1e-4)
 verifyEqual(testCase, objt(2), b'*yt, 'RelTol', 1e-4)
 verifyEqual(testCase, info, 0)
-% test SDPT3 vsdpup
+% test vsdpup
 [fU,X,lb] = vsdpup(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, objt(2) <= fU, true)
 verifyEqual(testCase, isscalar(X) && isnan(X), false);
 verifyEqual(testCase, any(isnan(lb)), false);
-% test SDPT3 vsdplow
+% test vsdplow
 [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fL <= objt(1), true)
 verifyEqual(testCase, isscalar(Y) && isnan(Y), false);
 verifyEqual(testCase, any(isnan(dl)), false);
+% test vsdpinfeas
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p',Xt,yt,Zt);
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
+[isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d',Xt,yt,Zt);
+verifyEqual(testCase, isinfeas, 0)
+verifyEqual(testCase, isnan(X), true)
+verifyEqual(testCase, isnan(Y), true)
 end
