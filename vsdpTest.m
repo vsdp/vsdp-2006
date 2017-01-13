@@ -54,10 +54,9 @@ DELTA = -1e-4;
 end
 
 function [blk,A,C,b] = example_primal_infeasible()
-DELTA = 0.1;%005;
 blk(1,:) = {'s'; 2};
 A{1,1} = [1 0; 0 0];
-A{2,1} = [0 1; 1 DELTA];
+A{2,1} = [0 1; 1 0.005];
 C{1}   = [0 0; 0 0];
 b = [-0.01; 1];
 end
@@ -362,7 +361,11 @@ function testVSDPLOW_example_primal_infeasible(testCase)
 [~,Xt,yt,Zt,~] = mysdps(blk,A,C,b);
 [fL,Y,dl] = vsdplow(blk,A,C,b,Xt,yt,Zt);
 verifyEqual(testCase, fL, 1, 'RelTol', eps())
-%TODO: verifyEqual(testCase, Y, [-1.010835012952675e2; -1.083501295267454e-2], 'RelTol', 1e-2)
+% TODO: improving ray Y does not match with a) value from help string of
+%       vsdpinfeas or b) value from PDF documentation
+%verifyEqual(testCase, Y, [-100.5998; -0.0060], 'RelTol', 1e-2)
+%verifyEqual(testCase, Y, [-101.0835012952675; -0.01083501295267454], ...
+%  'RelTol', 1e-2)
 verifyEqual(testCase, dl > 0, true)
 end
 
@@ -409,7 +412,11 @@ function testVSDPINFEAS_example_primal_infeasible(testCase)
 [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'p');
 verifyEqual(testCase, isinfeas, 1)
 verifyEqual(testCase, isnan(X), true)
-%TODO: verifyEqual(testCase, Y, [-1.010835012952675e2; -1.083501295267454e-2], 'RelTol', 1e-2)
+% TODO: improving ray Y does not match with a) value from help string of
+%       vsdpinfeas or b) value from PDF documentation
+%verifyEqual(testCase, Y, [-100.5998; -0.0060], 'RelTol', 1e-2)
+%verifyEqual(testCase, Y, [-101.0835012952675; -0.01083501295267454], ...
+%  'RelTol', 1e-2)
 [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,'d');
 verifyEqual(testCase, isinfeas, 0)
 verifyEqual(testCase, isnan(X), true)
