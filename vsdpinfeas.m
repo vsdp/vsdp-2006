@@ -45,13 +45,6 @@ function [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,~)
 %       choose = 'p';
 %       [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,Zt);
 %
-% isinfeas, Y
-% isinfeas =
-%      1
-% Y =
-%  -100.5998
-%    -0.0060
-%
 %   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
@@ -304,17 +297,3 @@ if choose == 'd'
 end
 
 end
-
-% Boyd-Vandenberhghe s585
-% These results are quite typical. The infeasible start
-% Newton method works
-% very well provided the inequalities are feasible, and
-% not very close to the boundary
-% between feasible and infeasible. But when the feasible
-% set is just barely nonempty
-% (as is the case in this example with small �),
-% a phase I method is far better. Another
-% advantage of the phase I method is that it gracefully
-% handles the infeasible case;
-% the infeasible start Newton method, in contrast,
-% simply fails to converge.
