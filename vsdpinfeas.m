@@ -1,58 +1,58 @@
-function [isinfeas, X, Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,~)
-% VSDPINFEAS Verified Semidefinite Programming
-%     Infeasibility-check for the block-diagonal problem
+function [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,~)
+% VSDPINFEAS  Infeasibility-check for the block-diagonal problem:
 %
-%     min  sum(j=1:n| <C{j}, X{j}>)
-%     s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i) for i = 1 : m
-%          X{j} must be positive semidefinite for j = 1 : n
+%         min  sum(j=1:n| <  C{j}, X{j}>)
+%         s.t. sum(j=1:n| <A{i,j}, X{j}>) = b(i)  for i = 1:m
+%              X{j} must be positive semidefinite for j = 1:n
 %
-%     as well as its dual
+%   as well as its dual:
 %
-%     max b'y s.t. C{j}-sum(i=1:m| y{i}*A{i,j}) must be
-%                  positive semidefinite for j = 1 : n
+%         max  b'*y
+%         s.t. C{j} - sum(i=1:m| y{i}*A{i,j}) must be positive semidefinite
+%                                             for j = 1:n.
 %
-% The block-diagonal structure is described
-% by an n*2-cell-array blk, n-cell-arrays C, X, and an
-% m*n-cell-array A as follows:
-% The j-th block C{j} and the blocks A{i,j} for i = 1 : m
-% are real symmetric matrices of common size s_j, and
-%    blk{j,1} = 's', blk{j,2} = s_j
-% The blocks C{j} and A{i,j} must be stored as individual
-% matrices in dense or sparse format.
+%   [isinfeas,X,Y] = VSDPINFEAS(blk,A,C,b,choose)
+%      The block-diagonal format (blk,A,C,b) is explained in 'mysdps.m'.
 %
-% The input A, C and the m-vector b
-% may be floating-point or interval quantities,
-%     choose = 'p'   if primal infeasibility should be verified.
-%     choose = 'd'   if dual infeasibility should be verified.
-%     Xt,yt,Zt       optional input: the computed approximate
-%                    solutions. If the approximations are not
-%                    given, then more time is needed.
+%         'choose'    If the character is 'p', primal infeasibility should be
+%                     verified.  If 'd', dual infeasibility should be verified.
 %
-% [isinfeas, X, Y] = VSDPINFEAS(blk,A,C,b,choose,Xt,yt,Zt,) returns
-%         isinfeas = 1 if the primal or dual problem is proved to
-%                      be infeasible,
-%                  = 0 if infeasibility cannot be verified.
-%         X    contains a rigorous certificate (improving  ray)
-%              of dual infeasibility, if it is unequal NaN.
-%         Y    is a rigorous certificate (improving ray)
-%              of primal infeasibility, if it is unequal NaN.
+%      The output is:
 %
-% EXAMPLE:
-% EPS = -0.01; DELTA = 0.1;
-% C{1} = [0 0; 0 0];
-% A{1,1} = [1 0; 0 0];
-% A{2,1} = [0 1; 1 DELTA];
-% b = [EPS 1]';
-% blk{1,1} = 's'; blk{1,2} = 2;
-% [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
-% choose = 'p';
-% [isinfeas, X, Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,Zt);
+%         'isinfeas'  Returns 1 if the primal or dual problem is proved to
+%                     be infeasible and 0 if infeasibility cannot be verified.
+%
+%         'X'         Contains a rigorous certificate (improving ray) of dual
+%                     infeasibility, if it is not equal to NaN.
+%
+%         'Y'         Is a rigorous certificate (improving ray) of primal
+%                     infeasibility, if it is not equal to NaN.
+%
+%   VSDPINFEAS(...,Xt,yt,Zt) optionally provide already by 'mysdps' computed
+%      approximate solutions (Xt,yt,Zt).  This avoids calling 'mysdps' from
+%      within this function, if approximate solutions are already present.
+%
+%   Example:
+%
+%       EPS = -0.01;
+%       DELTA = 0.1;
+%       blk(1,:) = {'s'; 2};
+%       A{1,1} = [1 0; 0 0];
+%       A{2,1} = [0 1; 1 DELTA];
+%         C{1} = [0 0; 0 0];
+%            b = [EPS; 1];
+%       [objt,Xt,yt,Zt,info] = mysdps(blk,A,C,b);
+%       choose = 'p';
+%       [isinfeas,X,Y] = vsdpinfeas(blk,A,C,b,choose,Xt,yt,Zt);
+%
 % isinfeas, Y
 % isinfeas =
 %      1
 % Y =
 %  -100.5998
 %    -0.0060
+%
+%   See also mysdps.
 
 % Copyright 2004-2006 Christian Jansson (jansson@tuhh.de)
 
