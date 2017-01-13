@@ -116,7 +116,7 @@ format short
 % SDPT3.  Different solvers can be chosen by setting the global variable
 % |VSDP_CHOICE_SDP| in the file |SDP_GLOBALPARAMETER.m|.
 %
-% * |VSDP_||CHOICE_SDP = 1|: SDPT3 is selected (default)
+% * |VSDP_CHOICE_SDP = 1|: SDPT3 is selected (default)
 % * |VSDP_CHOICE_SDP = 2|: SDPA is selected
 %
 % We want to illustrate that the proposed rigorous error bounds depend very
