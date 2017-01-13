@@ -160,7 +160,7 @@ if choose == 'p'
     dup(j) = max(upbounds);
   end
   % Check certificate
-  if ( dup <= 0 ) && ( (intval(b)'*yt) > 0 )
+  if ( all(dup <= 0) ) && ( (intval(b)'*yt) > 0 )
     isinfeas = 1;
     X = NaN;
     Y = yt;
