@@ -10,6 +10,19 @@ Computational results are given, including results for the SDPLIB benchmark
 problems.  This package supports interval input data and sparse format.
 
 
+## Prerequisites
+
+VSDP requires the approximate solver [SDPT3](https://github.com/sqlp/sdpt3)
+and the [interval toolbox "INTLAB"](http://www.ti3.tuhh.de/rump/intlab) in
+version 9 or higher.
+
+
+## Some demonstration
+
+Published output from
+[demovsdp.m](https://rawgit.com/siko1056/vsdp-2006-ng/master/doc/demovsdp.html)
+
+
 ## References
 
 - [Jansson2005] C. Jansson, Termination and Verification for Ill-posed
