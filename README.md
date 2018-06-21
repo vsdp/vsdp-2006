@@ -26,4 +26,7 @@ This package supports interval input data and sparse format.
 - Published output from
   [demovsdp.m](https://rawgit.com/vsdp/vsdp-2006/master/doc/demovsdp.html)
 
-For more information, please visit <https://vsdp.github.io/>.
+
+For more information, please read the Manual
+[vsdp-2006-doc.pdf](https://github.com/vsdp/vsdp-2006/raw/master/doc/vsdp-2006-doc.pdf)
+or visit <https://vsdp.github.io/>.
