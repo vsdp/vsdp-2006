@@ -1,5 +1,7 @@
 # VSDP: Verified SemiDefinite Programming (Version 2006 by Christian Jansson)
 
+> The latest version is [VSDP 2018](https://github.com/vsdp/vsdp-2018).
+
 VSDP is a [MATLAB](https://www.mathworks.com) /
 [GNU Octave](https://www.gnu.org/software/octave) software package for
 rigorously solving semidefinite programming problems.  It expresses these
@@ -15,23 +17,13 @@ This package supports interval input data and sparse format.
 
 ## Prerequisites
 
-VSDP requires the approximate solver [SDPT3](https://github.com/sqlp/sdpt3)
-and the [interval toolbox "INTLAB"](http://www.ti3.tuhh.de/rump/intlab) in
-version 9 or higher.
+- VSDP requires the approximate solver [SDPT3](https://github.com/sqlp/sdpt3)
+  and the interval toolbox [INTLAB](http://www.ti3.tuhh.de/rump/intlab).
 
 
 ## Some demonstration
 
-Published output from
-[demovsdp.m](https://rawgit.com/siko1056/vsdp-2006-ng/master/doc/demovsdp.html)
+- Published output from
+  [demovsdp.m](https://rawgit.com/vsdp/vsdp-2006/master/doc/demovsdp.html)
 
-
-## References
-
-- [Jansson2005] C. Jansson, Termination and Verification for Ill-posed
-  Semidefinite Programming Problems,
-  http://www.optimization-online.org/DB_HTML/2005/06/1150.html
-
-- [Jansson2004] C. Jansson, Rigorous Lower and Upper Bounds in Linear
-  Programming, SIAM J. OPTIM. Vol.14, No.3, pp. 914-935,
-  https://dx.doi.org/10.1137/S1052623402416839
+For more information, please visit <https://vsdp.github.io/>.
